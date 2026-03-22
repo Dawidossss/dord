@@ -1,0 +1,412 @@
+<!-- SYSTEM EGZAMINÓW - WERSJA FIREBASE -->
+<div id="dord-exams-root">
+<style>
+/* Izolacja i reset stylów */
+#dord-exams-root * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+#dord-exams-root { max-width: 700px; margin: 0 auto; background: #fff; padding-bottom: 40px; }
+
+/* Header (Spójny z resztą) */
+.dord-ex-header { background: #fff; border-bottom: 2px solid #f1c40f; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.dord-ex-header-left { display: flex; align-items: center; gap: 15px; }
+.dord-ex-logo { width: 40px; height: 40px; object-fit: contain; }
+.dord-ex-title { font-size: 18px; font-weight: 800; color: #111; }
+.dord-ex-sub { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+.dord-back-link { font-size: 12px; color: #f1c40f; text-decoration: none; font-weight: 700; border: 1px solid #f1c40f; padding: 6px 14px; border-radius: 20px; transition: all 0.2s; background: #fff; }
+.dord-back-link:hover { background: #f1c40f; color: #000; }
+
+/* Wyszukiwarka i przyciski */
+.dord-ex-controls { display: flex; gap: 10px; margin-bottom: 20px; padding: 0 15px; }
+.dord-ex-search { flex: 1; padding: 10px 12px; border: 1.5px solid #eee; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.2s; background: #f9f9f9; }
+.dord-ex-search:focus { border-color: #f1c40f; background: #fff; }
+.dord-ex-btn-main { padding: 10px 18px; background: #f1c40f; color: #000; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 5px rgba(241,196,15,0.3); transition: all 0.15s; }
+.dord-ex-btn-main:hover { background: #dfb50e; }
+
+/* Panel Dodawania (Formularz) */
+.dord-ex-panel { background: #f9fafb; border: 1px solid #eee; border-radius: 14px; padding: 20px; margin: 0 15px 20px 15px; display: none; animation: fadeIn 0.3s ease; }
+.dord-ex-panel.show { display: block; }
+.dord-ex-panel-title { font-size: 14px; font-weight: 800; margin-bottom: 15px; color: #111; text-transform: uppercase; }
+.dord-ex-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.dord-ex-field { display: flex; flex-direction: column; gap: 5px; }
+.dord-ex-label { font-size: 11px; font-weight: 700; color: #777; text-transform: uppercase; }
+.dord-ex-input { width: 100%; padding: 10px 12px; border: 1.5px solid #eee; border-radius: 8px; font-size: 14px; background: #fff; outline: none; }
+.dord-ex-input:focus { border-color: #f1c40f; }
+
+/* Pille (Wybór kategorii/wyniku) */
+.dord-ex-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.dord-ex-pill { padding: 8px 14px; border: 1.5px solid #eee; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; background: #fff; color: #666; transition: all 0.15s; user-select: none; }
+.dord-ex-pill.active-yellow { border-color: #f1c40f; background: #f1c40f; color: #000; }
+.dord-ex-pill.active-green { border-color: #27ae60; background: #27ae60; color: #fff; }
+.dord-ex-pill.active-red { border-color: #e74c3c; background: #e74c3c; color: #fff; }
+
+/* Karta Osoby */
+.dord-ex-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 14px; margin: 0 15px 12px 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: transform 0.1s; border-left: 5px solid #e74c3c; }
+.dord-ex-card.passed { border-left-color: #27ae60; }
+.dord-ex-card-body { padding: 15px; }
+.dord-ex-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.dord-ex-name { font-size: 16px; font-weight: 700; color: #111; }
+.dord-ex-details { font-size: 12px; color: #888; margin-top: 2px; }
+.dord-ex-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.dord-ex-badge-pass { background: #eafaf1; color: #27ae60; }
+.dord-ex-badge-fail { background: #fdf2f2; color: #e74c3c; }
+
+.dord-ex-actions { display: flex; gap: 8px; margin-top: 12px; }
+.dord-ex-btn-sm { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #eee; background: #fff; color: #666; transition: all 0.15s; }
+.dord-ex-btn-sm:hover { border-color: #ccc; }
+.dord-ex-btn-sm.danger { border-color: #e74c3c; color: #e74c3c; }
+.dord-ex-btn-sm.danger:hover { background: #e74c3c; color: #fff; }
+
+/* Historia rozwinięta */
+.dord-ex-history { background: #fafafa; border-top: 1px solid #eee; padding: 10px 15px; }
+.dord-ex-history-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+.dord-ex-history-row:last-child { border-bottom: none; }
+.dord-ex-history-date { color: #888; font-size: 11px; display: block; }
+
+/* Modale */
+.dord-ex-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
+.dord-ex-modal-bg.show { display: flex; }
+.dord-ex-modal { background: #fff; padding: 25px; border-radius: 16px; width: 350px; max-width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popIn 0.2s; }
+.dord-ex-modal-title { font-size: 17px; font-weight: 700; margin-bottom: 15px; color: #111; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+@media (max-width: 500px) {
+  .dord-ex-grid { grid-template-columns: 1fr; }
+  .dord-ex-card { margin: 0 10px 10px 10px; }
+  .dord-ex-controls { padding: 0 10px; }
+  .dord-ex-panel { margin: 0 10px 15px 10px; }
+}
+</style>
+
+<!-- HTML -->
+<div class="dord-ex-header">
+    <div class="dord-ex-header-left">
+        <img src="https://z-cdn-media.chatglm.cn/files/e765f68e-656e-42c9-a93f-c50b8530c618.png?auth_key=1874049393-a1d73f3391ef423084224503a91822aa-0-807a3d0214e239d7f33ff6e69e8664f3" class="dord-ex-logo">
+        <div>
+            <div class="dord-ex-title">Lista Zdających</div>
+            <div class="dord-ex-sub">Ewidencja Egzaminów</div>
+        </div>
+    </div>
+    <a href="index.html" class="dord-back-link">← Powrót</a>
+</div>
+
+<!-- Wyszukiwarka -->
+<div class="dord-ex-controls">
+    <input type="text" id="dord-ex-search" class="dord-ex-search" placeholder="Szukaj (imię, nazwisko, PESEL)...">
+    <button class="dord-ex-btn-main" onclick="dordExam.toggleAdd()">＋ Nowy</button>
+</div>
+
+<!-- Panel Dodawania -->
+<div id="dord-ex-add-panel" class="dord-ex-panel">
+    <div class="dord-ex-panel-title">Dodaj nową osobę</div>
+    <div class="dord-ex-grid">
+        <div class="dord-ex-field">
+            <label class="dord-ex-label">Imię</label>
+            <input class="dord-ex-input" id="dord-add-first" placeholder="Jan">
+        </div>
+        <div class="dord-ex-field">
+            <label class="dord-ex-label">Nazwisko</label>
+            <input class="dord-ex-input" id="dord-add-last" placeholder="Kowalski">
+        </div>
+    </div>
+    <div class="dord-ex-grid">
+        <div class="dord-ex-field">
+            <label class="dord-ex-label">Data ur.</label>
+            <input type="date" class="dord-ex-input" id="dord-add-dob">
+        </div>
+        <div class="dord-ex-field">
+            <label class="dord-ex-label">PESEL</label>
+            <input class="dord-ex-input" id="dord-add-pesel" maxlength="11">
+        </div>
+    </div>
+    <div class="dord-ex-field">
+        <label class="dord-ex-label">Egzaminator</label>
+        <input class="dord-ex-input" id="dord-add-examiner" placeholder="np. mgr Nowak">
+    </div>
+    
+    <div style="margin-top:10px">
+        <label class="dord-ex-label">Kategoria</label>
+        <div class="dord-ex-pills" id="dord-pills-cat">
+            <div class="dord-ex-pill active-yellow" data-val="B" onclick="dordExam.pickPill(this, 'cat', 'yellow')">Kat. B</div>
+            <div class="dord-ex-pill" data-val="C" onclick="dordExam.pickPill(this, 'cat', 'yellow')">Kat. C</div>
+        </div>
+    </div>
+
+    <div style="margin-top:10px">
+        <label class="dord-ex-label">Wynik</label>
+        <div class="dord-ex-pills" id="dord-pills-res">
+            <div class="dord-ex-pill" data-val="1" onclick="dordExam.pickPill(this, 'res', 'green')">✓ Zdał/a</div>
+            <div class="dord-ex-pill" data-val="0" onclick="dordExam.pickPill(this, 'res', 'red')">✗ Nie zdał/a</div>
+        </div>
+    </div>
+
+    <button class="dord-ex-btn-main" style="width:100%; margin-top:15px" onclick="dordExam.savePerson()">Zapisz w bazie</button>
+</div>
+
+<!-- Lista -->
+<div id="dord-ex-list"></div>
+
+<!-- Modal Dodawania Wyniku -->
+<div id="dord-modal-exam" class="dord-ex-modal-bg">
+    <div class="dord-ex-modal">
+        <div class="dord-ex-modal-title" id="dord-modal-title">Dodaj wynik</div>
+        <div class="dord-ex-field">
+            <label class="dord-ex-label">Egzaminator</label>
+            <input class="dord-ex-input" id="dord-modal-examiner">
+        </div>
+        <div style="margin-top:10px">
+            <label class="dord-ex-label">Kategoria</label>
+            <div class="dord-ex-pills" id="dord-modal-cat">
+                <div class="dord-ex-pill active-yellow" data-val="B" onclick="dordExam.pickPill(this, 'mcat', 'yellow')">Kat. B</div>
+                <div class="dord-ex-pill" data-val="C" onclick="dordExam.pickPill(this, 'mcat', 'yellow')">Kat. C</div>
+            </div>
+        </div>
+        <div style="margin-top:10px">
+            <label class="dord-ex-label">Wynik</label>
+            <div class="dord-ex-pills" id="dord-modal-res">
+                <div class="dord-ex-pill" data-val="1" onclick="dordExam.pickPill(this, 'mres', 'green')">✓ Zdał/a</div>
+                <div class="dord-ex-pill" data-val="0" onclick="dordExam.pickPill(this, 'mres', 'red')">✗ Nie zdał/a</div>
+            </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px">
+            <button class="dord-ex-btn-main" style="flex:1" onclick="dordExam.saveExam()">Zapisz</button>
+            <button class="dord-ex-btn-sm" style="flex:1; background:#f0f0f0; border:none; color:#555" onclick="dordExam.closeModals()">Anuluj</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Usuwania -->
+<div id="dord-modal-delete" class="dord-ex-modal-bg">
+    <div class="dord-ex-modal" style="max-width:320px">
+        <div class="dord-ex-modal-title" style="color:#e74c3c">Potwierdź usunięcie</div>
+        <p style="font-size:14px; color:#555; margin-bottom:20px">Czy na pewno chcesz usunąć tę osobę z bazy?</p>
+        <div style="display:flex; gap:10px;">
+            <button class="dord-ex-btn-sm" style="flex:1; background:#f0f0f0; border:none; color:#555" onclick="dordExam.closeModals()">Anuluj</button>
+            <button class="dord-ex-btn-sm danger" style="flex:1" onclick="dordExam.confirmDelete()">Usuń</button>
+        </div>
+    </div>
+</div>
+
+<!-- Skrypty Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+(function() {
+    // KONFIGURACJA
+    var firebaseConfig = {
+        apiKey: "AIzaSyC-Qxs9Zd0x1_1tpsiAQJE9QYkdPIARPXU",
+        authDomain: "dord---ewidencja-kursow.firebaseapp.com",
+        databaseURL: "https://dord---ewidencja-kursow-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "dord---ewidencja-kursow",
+        storageBucket: "dord---ewidencja-kursow.appspot.com",
+        messagingSenderId: "652495067977",
+        appId: "1:652495067977:web:61868205fa85f02d905898"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    var db = firebase.database();
+    var ref = db.ref('exams'); // Ścieżka 'exams'
+    var data = [];
+    var expanded = {};
+    var currentId = null;
+    var deleteId = null;
+
+    // Helpers
+    function esc(s) { return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function fmtDate(d) { return d ? new Date(d).toLocaleDateString('pl-PL') : '-'; }
+
+    // Logika Aplikacji
+    window.dordExam = {
+        toggleAdd: function() {
+            var p = document.getElementById('dord-ex-add-panel');
+            p.classList.toggle('show');
+            if(p.classList.contains('show')) {
+                // Reset form
+                document.getElementById('dord-add-first').value = '';
+                document.getElementById('dord-add-last').value = '';
+                document.getElementById('dord-add-dob').value = '';
+                document.getElementById('dord-add-pesel').value = '';
+                document.getElementById('dord-add-examiner').value = '';
+                this.resetPills('dord-pills-cat', 'B', 'yellow');
+                this.resetPills('dord-pills-res', null, null);
+            }
+        },
+        
+        pickPill: function(el, groupId, type) {
+            var parent = el.parentElement;
+            parent.querySelectorAll('.dord-ex-pill').forEach(function(p) { 
+                p.className = 'dord-ex-pill'; 
+            });
+            el.classList.add('active-' + type);
+        },
+
+        resetPills: function(id, defVal, type) {
+            document.querySelectorAll('#'+id+' .dord-ex-pill').forEach(function(p) {
+                if(p.dataset.val === defVal) p.className = 'dord-ex-pill active-'+type;
+                else p.className = 'dord-ex-pill';
+            });
+        },
+
+        getPillVal: function(id) {
+            var el = document.querySelector('#'+id+' .dord-ex-pill[class*="active"]');
+            return el ? el.dataset.val : null;
+        },
+
+        savePerson: function() {
+            var f = document.getElementById('dord-add-first').value.trim();
+            var l = document.getElementById('dord-add-last').value.trim();
+            if(!f || !l) return alert('Wpisz imię i nazwisko.');
+
+            var res = this.getPillVal('dord-pills-res');
+            if(!res) return alert('Wybierz wynik egzaminu.');
+
+            var obj = {
+                firstName: f,
+                lastName: l,
+                dob: document.getElementById('dord-add-dob').value,
+                pesel: document.getElementById('dord-add-pesel').value.trim(),
+                exams: [{
+                    date: new Date().toISOString(),
+                    category: this.getPillVal('dord-pills-cat'),
+                    passed: res === '1',
+                    examiner: document.getElementById('dord-add-examiner').value.trim()
+                }]
+            };
+
+            ref.push(obj).then(function() {
+                document.getElementById('dord-ex-add-panel').classList.remove('show');
+            });
+        },
+
+        openExamModal: function(id) {
+            currentId = id;
+            var p = data.find(function(x) { return x.id === id; });
+            document.getElementById('dord-modal-title').innerText = 'Nowy egzamin: ' + p.firstName + ' ' + p.lastName;
+            document.getElementById('dord-modal-examiner').value = '';
+            this.resetPills('dord-modal-cat', 'B', 'yellow');
+            this.resetPills('dord-modal-res', null, null);
+            document.getElementById('dord-modal-exam').classList.add('show');
+        },
+
+        saveExam: function() {
+            var res = this.getPillVal('dord-modal-res');
+            if(!res) return alert('Wybierz wynik.');
+
+            var p = data.find(function(x) { return x.id === currentId; });
+            if(!p) return;
+
+            var newExam = {
+                date: new Date().toISOString(),
+                category: this.getPillVal('dord-modal-cat'),
+                passed: res === '1',
+                examiner: document.getElementById('dord-modal-examiner').value.trim()
+            };
+
+            var updates = {};
+            updates['/exams/' + currentId + '/exams/' + (p.exams ? p.exams.length : 0)] = newExam;
+            
+            // Musimy zaktualizować cały obiekt exams w Firebase, bo array push bywa problematyczny w SDK v8 bez mutate
+            // Lepiej pobrać aktualną listę, dodać i zapisać
+            var currentExams = p.exams || [];
+            currentExams.push(newExam);
+            
+            firebase.database().ref('exams/' + currentId).update({ exams: currentExams }).then(function() {
+                dordExam.closeModals();
+            });
+        },
+
+        openDeleteModal: function(id) {
+            deleteId = id;
+            document.getElementById('dord-modal-delete').classList.add('show');
+        },
+
+        confirmDelete: function() {
+            if(deleteId) ref.child(deleteId).remove();
+            this.closeModals();
+        },
+
+        toggleHistory: function(id) {
+            expanded[id] = !expanded[id];
+            render();
+        },
+
+        closeModals: function() {
+            document.querySelectorAll('.dord-ex-modal-bg').forEach(function(m) { m.classList.remove('show'); });
+            currentId = null;
+            deleteId = null;
+        }
+    };
+
+    // Renderowanie
+    function render() {
+        var q = document.getElementById('dord-ex-search').value.toLowerCase().trim();
+        var list = data;
+
+        if(q) {
+            list = data.filter(function(p) {
+                return (p.firstName + ' ' + p.lastName).toLowerCase().includes(q) || (p.pesel && p.pesel.includes(q));
+            });
+        }
+
+        var html = '';
+        if(list.length === 0) {
+            html = '<div style="text-align:center; color:#aaa; padding:40px 15px;">Brak wyników wyszukiwania</div>';
+        } else {
+            list.forEach(function(p) {
+                var last = p.exams[p.exams.length - 1];
+                var passCount = p.exams.filter(function(e) { return e.passed; }).length;
+                var failCount = p.exams.filter(function(e) { return !e.passed; }).length;
+                
+                var isPassed = last && last.passed;
+                var cardClass = isPassed ? 'passed' : '';
+
+                html += '<div class="dord-ex-card '+cardClass+'">'+
+                    '<div class="dord-ex-card-body">'+
+                        '<div class="dord-ex-card-top">'+
+                            '<div>'+
+                                '<div class="dord-ex-name">'+esc(p.firstName)+' '+esc(p.lastName)+'</div>'+
+                                '<div class="dord-ex-details">PESEL: '+(p.pesel || '-')+' · Ur.: '+fmtDate(p.dob)+'</div>'+
+                                '<div class="dord-ex-details" style="margin-top:4px">Łącznie: '+p.exams.length+' · Zdane: '+passCount+' · Niezdane: '+failCount+'</div>'+
+                            '</div>'+
+                            '<div class="dord-ex-badge '+(isPassed ? 'dord-ex-badge-pass' : 'dord-ex-badge-fail')+'">'+(isPassed ? 'ZDAŁ' : 'NIE ZDAŁ')+'</div>'+
+                        '</div>'+
+                        '<div class="dord-ex-actions">'+
+                            '<button class="dord-ex-btn-sm" onclick="dordExam.openExamModal(\''+p.id+'\')">＋ Wynik</button>'+
+                            '<button class="dord-ex-btn-sm" onclick="dordExam.toggleHistory(\''+p.id+'\')">'+(expanded[p.id] ? '▲ Ukryj' : '▼ Historia')+'</button>'+
+                            '<button class="dord-ex-btn-sm danger" onclick="dordExam.openDeleteModal(\''+p.id+'\')">Usuń</button>'+
+                        '</div>'+
+                    '</div>';
+                
+                if(expanded[p.id]) {
+                    html += '<div class="dord-ex-history">';
+                    p.exams.slice().reverse().forEach(function(e) {
+                        html += '<div class="dord-ex-history-row">'+
+                            '<div><strong>Kat. '+(e.category||'B')+'</strong> <span class="dord-ex-history-date">'+fmtDate(e.date)+' · '+(e.examiner||'-')+'</span></div>'+
+                            '<div style="color:'+(e.passed?'#27ae60':'#e74c3c')+'; font-weight:700">'+(e.passed?'Zdał':'Nie zdał')+'</div>'+
+                        '</div>';
+                    });
+                    html += '</div>';
+                }
+
+                html += '</div>';
+            });
+        }
+        document.getElementById('dord-ex-list').innerHTML = html;
+    }
+
+    // Database Listener
+    ref.on('value', function(snap) {
+        var obj = snap.val();
+        data = [];
+        if(obj) {
+            for(var k in obj) data.push({ id: k, ...obj[k] });
+        }
+        render();
+    });
+
+    // Search input
+    document.getElementById('dord-ex-search').addEventListener('input', render);
+
+})();
+</script>
+</div>
