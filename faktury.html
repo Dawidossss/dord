@@ -1,0 +1,217 @@
+<!-- SYSTEM FAKTUR - WERSJA POPRAWIONA (STYL DORD) -->
+<div id="dord-invoices-root">
+<style>
+/* Reset i izolacja */
+#dord-invoices-root * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+#dord-invoices-root { max-width: 700px; margin: 0 auto; background: #fff; padding-bottom: 40px; }
+
+/* Header (Identyczny jak w Ewidencji) */
+.dord-inv-header { background: #fff; border-bottom: 2px solid #f1c40f; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.dord-inv-header-left { display: flex; align-items: center; gap: 15px; }
+.dord-inv-logo { width: 40px; height: 40px; object-fit: contain; }
+.dord-inv-title { font-size: 18px; font-weight: 800; color: #111; }
+.dord-inv-sub { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+.dord-back-link { font-size: 12px; color: #f1c40f; text-decoration: none; font-weight: 700; border: 1px solid #f1c40f; padding: 6px 14px; border-radius: 20px; transition: all 0.2s; background: #fff; }
+.dord-back-link:hover { background: #f1c40f; color: #000; }
+
+/* Statystyki (Karty zamiast czarnego paska) */
+.dord-inv-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 15px 20px 15px; }
+.dord-inv-stat-card { background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+.dord-inv-stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.dord-inv-stat-money { background: #fff3cd; color: #f1c40f; }
+.dord-inv-stat-num { background: #eafaf1; color: #27ae60; }
+.dord-inv-stat-val { font-size: 22px; font-weight: 800; color: #111; }
+.dord-inv-stat-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: 700; }
+
+/* Formularz */
+.dord-inv-panel { background: #f9fafb; border: 1px solid #eee; border-radius: 16px; padding: 20px; margin: 0 15px 25px 15px; }
+.dord-inv-section-title { font-size: 12px; font-weight: 800; color: #555; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 0.5px; }
+.dord-inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.dord-inv-field { display: flex; flex-direction: column; gap: 5px; }
+.dord-inv-label { font-size: 11px; font-weight: 700; color: #777; text-transform: uppercase; }
+.dord-inv-input { width: 100%; padding: 12px 14px; border: 1.5px solid #eee; border-radius: 10px; font-size: 14px; background: #fff; transition: border-color 0.2s; outline: none; }
+.dord-inv-input:focus { border-color: #f1c40f; background: #fffdf5; }
+.dord-inv-btn-add { width: 100%; padding: 14px; background: #f1c40f; color: #000; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.1s, background 0.2s; box-shadow: 0 4px 10px rgba(241, 196, 15, 0.3); }
+.dord-inv-btn-add:active { transform: scale(0.98); }
+.dord-inv-btn-add:hover { background: #dfb50e; }
+
+/* Lista Faktur */
+.dord-inv-list-header { display: flex; justify-content: space-between; align-items: center; margin: 0 15px 15px 15px; }
+.dord-inv-list-title { font-size: 14px; font-weight: 700; color: #111; }
+.dord-inv-count { font-size: 12px; color: #999; background: #f0f0f0; padding: 4px 10px; border-radius: 10px; font-weight: 600; }
+
+.dord-inv-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 14px; padding: 15px; margin: 0 15px 12px 15px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #f1c40f; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: transform 0.1s; }
+.dord-inv-card:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+.dord-inv-info { flex: 1; }
+.dord-inv-client { font-size: 15px; font-weight: 700; color: #111; }
+.dord-inv-meta { font-size: 11px; color: #aaa; margin-top: 3px; }
+.dord-inv-money { text-align: right; margin-left: 10px; }
+.dord-inv-amount { font-size: 18px; font-weight: 800; color: #27ae60; }
+.dord-inv-delete { background: transparent; border: 1px solid #e74c3c; color: #e74c3c; font-size: 11px; font-weight: 600; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-left: 10px; transition: all 0.2s; }
+.dord-inv-delete:hover { background: #e74c3c; color: #fff; }
+
+.dord-inv-empty { text-align: center; color: #bbb; padding: 40px 20px; margin: 0 15px; background: #fafafa; border-radius: 12px; font-size: 14px; }
+
+/* Mobile */
+@media (max-width: 500px) {
+  .dord-inv-stats-grid { grid-template-columns: 1fr; margin: 0 10px 15px 10px; }
+  .dord-inv-panel { margin: 0 10px 20px 10px; padding: 15px; }
+  .dord-inv-grid { grid-template-columns: 1fr; }
+  .dord-inv-card { margin: 0 10px 10px 10px; }
+  .dord-inv-list-header { margin: 0 10px 15px 10px; }
+}
+</style>
+
+<!-- HTML -->
+<div class="dord-inv-header">
+    <div class="dord-inv-header-left">
+        <img src="https://z-cdn-media.chatglm.cn/files/e765f68e-656e-42c9-a93f-c50b8530c618.png?auth_key=1874049393-a1d73f3391ef423084224503a91822aa-0-807a3d0214e239d7f33ff6e69e8664f3" class="dord-inv-logo">
+        <div>
+            <div class="dord-inv-title">System Faktur</div>
+            <div class="dord-inv-sub">Rozliczenia Finansowe</div>
+        </div>
+    </div>
+    <a href="index.html" class="dord-back-link">← Powrót</a>
+</div>
+
+<!-- Stats -->
+<div class="dord-inv-stats-grid">
+    <div class="dord-inv-stat-card">
+        <div class="dord-inv-stat-icon dord-inv-stat-money">💰</div>
+        <div>
+            <div class="dord-inv-stat-val" id="inv-total">0 zł</div>
+            <div class="dord-inv-stat-label">Przychód</div>
+        </div>
+    </div>
+    <div class="dord-inv-stat-card">
+        <div class="dord-inv-stat-icon dord-inv-stat-num">🧾</div>
+        <div>
+            <div class="dord-inv-stat-val" id="inv-count">0</div>
+            <div class="dord-inv-stat-label">Faktur</div>
+        </div>
+    </div>
+</div>
+
+<!-- Formularz -->
+<div class="dord-inv-panel">
+    <div class="dord-inv-section-title">Wystaw nową fakturę</div>
+    <div class="dord-inv-grid">
+        <div style="grid-column: 1 / -1">
+            <div class="dord-inv-field">
+                <label class="dord-inv-label">Klient / Firma</label>
+                <input class="dord-inv-input" id="inv-input-client" placeholder="np. Jan Kowalski">
+            </div>
+        </div>
+        <div class="dord-inv-field">
+            <label class="dord-inv-label">Kwota (zł)</label>
+            <input class="dord-inv-input" id="inv-input-amount" placeholder="0,00">
+        </div>
+        <div class="dord-inv-field">
+            <label class="dord-inv-label">Wystawił</label>
+            <input class="dord-inv-input" id="inv-input-issuer" placeholder="Twoje imię">
+        </div>
+    </div>
+    <button class="dord-inv-btn-add" id="inv-btn-add">＋ Dodaj do rejestru</button>
+</div>
+
+<!-- Lista -->
+<div class="dord-inv-list-header">
+    <span class="dord-inv-list-title">Rejestr faktur</span>
+    <span class="dord-inv-count" id="inv-list-count">0 wpisów</span>
+</div>
+<div id="inv-list"></div>
+
+<!-- FIREBASE SCRIPTS -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+(function() {
+    // KONFIGURACJA
+    var firebaseConfig = {
+        apiKey: "AIzaSyC-Qxs9Zd0x1_1tpsiAQJE9QYkdPIARPXU",
+        authDomain: "dord---ewidencja-kursow.firebaseapp.com",
+        databaseURL: "https://dord---ewidencja-kursow-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "dord---ewidencja-kursow",
+        storageBucket: "dord---ewidencja-kursow.appspot.com",
+        messagingSenderId: "652495067977",
+        appId: "1:652495067977:web:61868205fa85f02d905898"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    var db = firebase.database();
+    var ref = db.ref('invoices');
+    var data = [];
+
+    // Helpers
+    function esc(s) { return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function formatMoney(v) { return v.toLocaleString('pl-PL', { minimumFractionDigits: 2 }) + ' zł'; }
+    function parseAmount(str) {
+        if(!str) return 0;
+        var n = str.replace(',', '.').replace(/\s/g, '');
+        var v = parseFloat(n);
+        return isNaN(v) ? 0 : v;
+    }
+    function fmtDate(d) { 
+        return new Date(d).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric' }) + 
+               ' · ' + new Date(d).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }); 
+    }
+
+    function render() {
+        var total = 0;
+        data.forEach(function(i) { total += i.amount; });
+        
+        document.getElementById('inv-total').textContent = formatMoney(total);
+        document.getElementById('inv-count').textContent = data.length;
+        document.getElementById('inv-list-count').textContent = data.length + ' wpisów';
+
+        var list = document.getElementById('inv-list');
+        if(data.length === 0) {
+            list.innerHTML = '<div class="dord-inv-empty">Brak zapisanych faktur</div>';
+            return;
+        }
+
+        var sorted = data.slice().sort(function(a,b) { return new Date(b.date) - new Date(a.date); });
+        var html = '';
+        
+        sorted.forEach(function(inv) {
+            html += '<div class="dord-inv-card">'+
+                '<div class="dord-inv-info">'+
+                    '<div class="dord-inv-client">'+esc(inv.client)+'</div>'+
+                    '<div class="dord-inv-meta">'+fmtDate(inv.date)+(inv.issuer ? ' · '+esc(inv.issuer) : '')+'</div>'+
+                '</div>'+
+                '<div class="dord-inv-money"><div class="dord-inv-amount">'+formatMoney(inv.amount)+'</div></div>'+
+                '<button class="dord-inv-delete" onclick="window.invDelete(\''+inv.id+'\')">Usuń</button>'+
+            '</div>';
+        });
+        list.innerHTML = html;
+    }
+
+    ref.on('value', function(snap) {
+        var obj = snap.val();
+        data = [];
+        if(obj) { for(var k in obj) data.push({id:k, ...obj[k]}); }
+        render();
+    });
+
+    document.getElementById('inv-btn-add').addEventListener('click', function() {
+        var client = document.getElementById('inv-input-client').value.trim();
+        var amountStr = document.getElementById('inv-input-amount').value.trim();
+        var issuer = document.getElementById('inv-input-issuer').value.trim();
+
+        if(!client || !amountStr) return alert('Uzupełnij klienta i kwotę.');
+        var amount = parseAmount(amountStr);
+        if(amount <= 0) return alert('Niepoprawna kwota.');
+
+        ref.push({ client: client, amount: amount, issuer: issuer, date: new Date().toISOString() })
+          .then(function() {
+              document.getElementById('inv-input-client').value = '';
+              document.getElementById('inv-input-amount').value = '';
+          }).catch(function(e) { alert('Błąd: '+e.message); });
+    });
+
+    window.invDelete = function(id) {
+        if(confirm('Usunąć fakturę?')) ref.child(id).remove();
+    };
+})();
+</script>
+</div>
