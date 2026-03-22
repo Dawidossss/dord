@@ -5,11 +5,16 @@
 #dord-root-system * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
 #dord-root-system { max-width: 700px; margin: 0 auto; background: #fff; }
 
-/* Header */
-.dord-header { background: #fff; border-bottom: 2px solid #f1c40f; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+/* Header - Zaktualizowany dla przycisku powrotu */
+.dord-header { background: #fff; border-bottom: 2px solid #f1c40f; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.dord-header-left { display: flex; align-items: center; gap: 15px; }
 .dord-logo { width: 40px; height: 40px; object-fit: contain; }
 .dord-title { font-size: 18px; font-weight: 800; color: #111; }
 .dord-subtitle { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Styl przycisku powrotu (identyczny jak w innych modułach) */
+.dord-back-link { font-size: 12px; color: #f1c40f; text-decoration: none; font-weight: 700; border: 1px solid #f1c40f; padding: 6px 14px; border-radius: 20px; transition: all 0.2s; background: #fff; white-space: nowrap; }
+.dord-back-link:hover { background: #f1c40f; color: #000; }
 
 /* Stats */
 .dord-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
@@ -59,16 +64,21 @@
 
 @media (max-width: 500px) {
   .dord-stats-grid { grid-template-columns: 1fr; }
+  .dord-header { flex-wrap: wrap; gap: 10px; }
 }
 </style>
 
 <!-- HTML Structure -->
 <div class="dord-header">
-    <img src="https://z-cdn-media.chatglm.cn/files/e765f68e-656e-42c9-a93f-c50b8530c618.png?auth_key=1874049393-a1d73f3391ef423084224503a91822aa-0-807a3d0214e239d7f33ff6e69e8664f3" class="dord-logo">
-    <div>
-        <div class="dord-title">Ewidencja Kursów</div>
-        <div class="dord-subtitle">Baza Danych Online</div>
+    <div class="dord-header-left">
+        <img src="https://z-cdn-media.chatglm.cn/files/e765f68e-656e-42c9-a93f-c50b8530c618.png?auth_key=1874049393-a1d73f3391ef423084224503a91822aa-0-807a3d0214e239d7f33ff6e69e8664f3" class="dord-logo">
+        <div>
+            <div class="dord-title">Ewidencja Kursów</div>
+            <div class="dord-subtitle">Baza Danych Online</div>
+        </div>
     </div>
+    <!-- DODANY PRZYCISK POWROTU -->
+    <a href="index.html" class="dord-back-link">← Powrót</a>
 </div>
 
 <div id="dord-status-bar" class="dord-status-loading">Łączenie z bazą danych...</div>
