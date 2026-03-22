@@ -1,0 +1,91 @@
+<!-- PANEL PRACOWNIKA DORD - STRONA GŁÓWNA (WERSJA 4 MODUŁOWA) -->
+<div id="dord-root-panel">
+<style>
+/* Spójny styl z resztą systemu */
+#dord-root-panel * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+#dord-root-panel { max-width: 800px; margin: 0 auto; background: #fff; padding-bottom: 50px; }
+
+/* Header */
+.dord-main-header { background: linear-gradient(135deg, #111 0%, #333 100%); color: #fff; padding: 40px 20px; text-align: center; border-radius: 0 0 20px 20px; margin-bottom: 30px; }
+.dord-main-logo { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 15px; border: 3px solid #f1c40f; }
+.dord-main-title { font-size: 24px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+.dord-main-subtitle { font-size: 12px; color: #aaa; margin-top: 5px; text-transform: uppercase; }
+
+/* Grid 2x2 */
+.dord-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
+@media (max-width: 500px) { .dord-grid { grid-template-columns: 1fr; } }
+
+/* Karty Menu */
+.dord-menu-card { 
+    background: #fff; 
+    border: 1px solid #eee; 
+    border-radius: 16px; 
+    padding: 25px 20px; 
+    text-align: center; 
+    text-decoration: none; 
+    color: #111;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    transition: all 0.2s; 
+    display: block;
+    border-bottom: 4px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+.dord-menu-card:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1); 
+    border-bottom-color: #f1c40f;
+}
+.dord-menu-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+.dord-menu-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 5px; }
+.dord-menu-desc { font-size: 11px; color: #888; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Stopka */
+.dord-footer { text-align: center; margin-top: 40px; color: #ccc; font-size: 11px; padding: 0 20px; }
+</style>
+
+<!-- NAGŁÓWEK -->
+<div class="dord-main-header">
+    <img src="https://z-cdn-media.chatglm.cn/files/e765f68e-656e-42c9-a93f-c50b8530c618.png?auth_key=1874049393-a1d73f3391ef423084224503a91822aa-0-807a3d0214e239d7f33ff6e69e8664f3" class="dord-main-logo">
+    <h1 class="dord-main-title">Panel Pracownika DORD</h1>
+    <div class="dord-main-subtitle">Wybierz moduł, aby kontynuować</div>
+</div>
+
+<!-- PRZYCISKI DO MODUŁÓW -->
+<div class="dord-grid">
+    
+    <!-- 1. EWIDENCJA KURSÓW -->
+    <a href="ewidencjakursow.html" class="dord-menu-card">
+        <span class="dord-menu-icon">🚗</span>
+        <span class="dord-menu-name">Ewidencja Kursów</span>
+        <span class="dord-menu-desc">Czas jazdy, historia, PESEL</span>
+    </a>
+
+    <!-- 2. TERMINARZ -->
+    <a href="kalendarz.html" class="dord-menu-card">
+        <span class="dord-menu-icon">📅</span>
+        <span class="dord-menu-name">Terminarz</span>
+        <span class="dord-menu-desc">Planowanie zajęć</span>
+    </a>
+
+    <!-- 3. LISTA ZDAJĄCYCH -->
+    <a href="listazdajacych.html" class="dord-menu-card">
+        <span class="dord-menu-icon">📝</span>
+        <span class="dord-menu-name">Lista Zdających</span>
+        <span class="dord-menu-desc">Egzaminy i statystyki</span>
+    </a>
+
+    <!-- 4. SYSTEM FAKTUR -->
+    <a href="faktury.html" class="dord-menu-card">
+        <span class="dord-menu-icon">🧾</span>
+        <span class="dord-menu-name">System Faktur</span>
+        <span class="dord-menu-desc">Rozliczenia i dokumenty</span>
+    </a>
+
+</div>
+
+<div class="dord-footer">
+    System DORD v1.0 &copy; 2024<br>
+    Zintegrowana baza danych Firebase
+</div>
+</div>
