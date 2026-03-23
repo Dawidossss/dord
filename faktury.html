@@ -1,7 +1,7 @@
-<!-- SKRYPT ZABEZPIECZAJĄCY (Wklej na górę body podstrony) -->
+<!-- SKRYPT SPRAWDZAJĄCY LOGOWANIE -->
 <script>
     if (!localStorage.getItem('dordUser') || !localStorage.getItem('dordPass')) {
-        window.location.href = 'index.html'; // Przekierowanie na stronę logowania
+        window.location.href = 'index.html'; // Wyrzuć na stronę logowania
     }
 </script>
 <!-- SYSTEM FAKTUR - WERSJA POPRAWIONA (STYL DORD) -->
