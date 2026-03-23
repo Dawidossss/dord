@@ -1,3 +1,9 @@
+<!-- SKRYPT ZABEZPIECZAJĄCY (Wklej na górę body podstrony) -->
+<script>
+    if (!localStorage.getItem('dordUser') || !localStorage.getItem('dordPass')) {
+        window.location.href = 'index.html'; // Przekierowanie na stronę logowania
+    }
+</script>
 <!-- SYSTEM EGZAMINÓW - WERSJA FIREBASE -->
 <div id="dord-exams-root">
 <style>
