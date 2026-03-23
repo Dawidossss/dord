@@ -1,29 +1,32 @@
-<!-- SKRYPT ZABEZPIECZAJĄCY (Wklej na górę body podstrony) -->
+<!-- SKRYPT SPRAWDZAJĄCY LOGOWANIE -->
 <script>
     if (!localStorage.getItem('dordUser') || !localStorage.getItem('dordPass')) {
         window.location.href = 'index.html'; // Przekierowanie na stronę logowania
     }
 </script>
-<!-- DORD SYSTEM - WERSJA STABILNA DLA WEBWAVE -->
+<!-- DORD SYSTEM - EWIDENCJA KURSÓW (Z LOGOWANIEM) -->
 <div id="dord-root-system">
 <style>
-/* Isolujemy style, żeby nie psuły reszty strony, ale wyglądały ładnie */
+/* Isolujemy style */
 #dord-root-system * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
 #dord-root-system { max-width: 700px; margin: 0 auto; background: #fff; }
 
-/* Header - Zaktualizowany dla przycisku powrotu */
+/* Header */
 .dord-header { background: #fff; border-bottom: 2px solid #f1c40f; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 .dord-header-left { display: flex; align-items: center; gap: 15px; }
 .dord-logo { width: 40px; height: 40px; object-fit: contain; }
 .dord-title { font-size: 18px; font-weight: 800; color: #111; }
 .dord-subtitle { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
-
-/* Styl przycisku powrotu (identyczny jak w innych modułach) */
 .dord-back-link { font-size: 12px; color: #f1c40f; text-decoration: none; font-weight: 700; border: 1px solid #f1c40f; padding: 6px 14px; border-radius: 20px; transition: all 0.2s; background: #fff; white-space: nowrap; }
 .dord-back-link:hover { background: #f1c40f; color: #000; }
 
+/* User Info Box */
+.user-info-box { background: #111; color: #fff; padding: 10px 15px; margin: 0 15px 20px 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.user-info-box span { color: #f1c40f; font-weight: 700; }
+.user-role-small { font-size: 11px; background: #333; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+
 /* Stats */
-.dord-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+.dord-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; padding: 0 15px; }
 .dord-stat-card { background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 .dord-stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .dord-stat-pending { background: #fdf2f2; color: #e74c3c; }
@@ -32,7 +35,7 @@
 .dord-stat-label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: 700; }
 
 /* Controls */
-.dord-search-row { display: flex; gap: 10px; margin-bottom: 15px; }
+.dord-search-row { display: flex; gap: 10px; margin-bottom: 15px; padding: 0 15px; }
 .dord-input { width: 100%; padding: 10px 12px; border: 1.5px solid #eee; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.2s; background: #fff; }
 .dord-input:focus { border-color: #f1c40f; }
 .dord-btn { padding: 10px 18px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
@@ -43,7 +46,7 @@
 .dord-btn-danger { background: transparent; border: 1px solid #e74c3c; color: #e74c3c; }
 
 /* List Cards */
-.dord-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 14px; padding: 15px; margin-bottom: 12px; border-left: 5px solid #e74c3c; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: transform 0.1s; }
+.dord-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 14px; padding: 15px; margin-bottom: 12px; border-left: 5px solid #e74c3c; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: transform 0.1s; margin-left: 15px; margin-right: 15px; }
 .dord-card:hover { transform: translateY(-1px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 .dord-card.done { border-left-color: #27ae60; }
 .dord-name { font-size: 16px; font-weight: 700; color: #111; }
@@ -63,10 +66,10 @@
 .dord-history-item { font-size: 12px; padding: 5px 0; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; }
 
 /* Status bar */
-#dord-status-bar { font-size: 11px; padding: 5px 10px; border-radius: 6px; margin-bottom: 15px; text-align: center; }
+#dord-status-bar { font-size: 11px; padding: 5px 10px; border-radius: 6px; margin-bottom: 15px; text-align: center; margin-left: 15px; margin-right: 15px; }
 .dord-status-loading { background: #fff3cd; color: #856404; }
 .dord-status-error { background: #f8d7da; color: #721c24; }
-.dord-status-ok { background: #d4edda; color: #155724; display: none; } /* Hide when ok */
+.dord-status-ok { background: #d4edda; color: #155724; display: none; }
 
 @media (max-width: 500px) {
   .dord-stats-grid { grid-template-columns: 1fr; }
@@ -83,8 +86,13 @@
             <div class="dord-subtitle">Baza Danych Online</div>
         </div>
     </div>
-    <!-- DODANY PRZYCISK POWROTU -->
     <a href="index.html" class="dord-back-link">← Powrót</a>
+</div>
+
+<!-- Wyświetlanie zalogowanego użytkownika -->
+<div class="user-info-box">
+    🔐 Zalogowano jako: <span id="displayUserName">-</span>
+    <span id="displayUserRole" class="user-role-small"></span>
 </div>
 
 <div id="dord-status-bar" class="dord-status-loading">Łączenie z bazą danych...</div>
@@ -119,7 +127,7 @@
         <div class="dord-modal-title">Nowy kursant</div>
         <input type="text" id="dord-add-name" class="dord-input" placeholder="Imię i nazwisko" style="margin-bottom:8px">
         <input type="text" id="dord-add-pesel" class="dord-input" placeholder="PESEL" maxlength="11" style="margin-bottom:8px">
-        <input type="text" id="dord-add-examiner" class="dord-input" placeholder="Egzaminator">
+        <input type="text" id="dord-add-examiner" class="dord-input" placeholder="Egzaminator" readonly style="background:#f5f5f5; color:#555;">
         <div class="dord-actions-row">
             <button class="dord-btn dord-btn-sec" onclick="dord.fn.closeAll()" style="flex:1">Anuluj</button>
             <button class="dord-btn dord-btn-main" onclick="dord.fn.saveAdd()" style="flex:1">Zapisz</button>
@@ -131,7 +139,7 @@
     <div class="dord-modal-box">
         <div class="dord-modal-title" id="dord-time-title">Dodaj czas</div>
         <input type="number" id="dord-time-mins" class="dord-input" placeholder="Ilość minut" style="margin-bottom:8px">
-        <input type="text" id="dord-time-examiner" class="dord-input" placeholder="Egzaminator">
+        <input type="text" id="dord-time-examiner" class="dord-input" placeholder="Egzaminator" readonly style="background:#f5f5f5; color:#555;">
         <div class="dord-actions-row">
             <button class="dord-btn dord-btn-sec" onclick="dord.fn.closeAll()" style="flex:1">Anuluj</button>
             <button class="dord-btn dord-btn-main" onclick="dord.fn.saveTime()" style="flex:1">Dodaj</button>
@@ -148,7 +156,7 @@
     </div>
 </div>
 
-<!-- SKRYPTY (Wersja stara - Compat, bez modułów) -->
+<!-- SKRYPTY -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
@@ -171,6 +179,35 @@
     var data = [];
     var currentId = null;
 
+    // --- ZMIENNE UŻYTKOWNIKA ---
+    var currentUserLogin = localStorage.getItem('dordUser') || 'Nieznany';
+    var currentExaminerInput = document.getElementById('dord-add-examiner');
+    var currentExaminerInputTime = document.getElementById('dord-time-examiner');
+    var displayName = document.getElementById('displayUserName');
+    var displayRole = document.getElementById('displayUserRole');
+
+    // Pobranie roli i ustawienie pól
+    if (currentUserLogin) {
+        db.ref('users/' + currentUserLogin).once('value', function(snap) {
+            var userData = snap.val();
+            if (userData) {
+                // Ustawienie pól formularzy na login zalogowanego
+                currentExaminerInput.value = currentUserLogin;
+                currentExaminerInputTime.value = currentUserLogin;
+                
+                // Wyświetlenie w pasku info
+                displayName.innerText = currentUserLogin;
+                displayRole.innerText = userData.role || 'Użytkownik';
+            } else {
+                // Jeśli brak danych w bazie (np. admin), pokaż sam login
+                displayName.innerText = currentUserLogin;
+                displayRole.innerText = 'Admin';
+                currentExaminerInput.value = currentUserLogin;
+                currentExaminerInputTime.value = currentUserLogin;
+            }
+        });
+    }
+
     // Helpers
     function esc(s) { return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     function fmtTime(m) { return m>=60 ? Math.floor(m/60)+'h '+(m%60>0?(m%60)+'min':'') : m+'min'; }
@@ -182,7 +219,7 @@
             openAdd: function() {
                 document.getElementById('dord-add-name').value = '';
                 document.getElementById('dord-add-pesel').value = '';
-                document.getElementById('dord-add-examiner').value = '';
+                // Egzaminator jest już ustawiony automatycznie (readonly)
                 document.getElementById('dord-modal-add').classList.add('show');
             },
             closeAll: function() {
@@ -191,10 +228,14 @@
             saveAdd: function() {
                 var n = document.getElementById('dord-add-name').value.trim();
                 if(!n) return alert('Wpisz imię!');
+                
+                // Pobierz aktualną wartość z pola (na wszelki wypadek, choć jest readonly)
+                var examinerVal = document.getElementById('dord-add-examiner').value.trim();
+
                 var obj = {
                     name: n,
                     pesel: document.getElementById('dord-add-pesel').value.trim(),
-                    examiner: document.getElementById('dord-add-examiner').value.trim(),
+                    examiner: examinerVal,
                     minutes: 0,
                     history: []
                 };
@@ -207,7 +248,8 @@
                 var s = data.find(function(x) { return x.id === id; });
                 document.getElementById('dord-time-title').innerText = 'Czas: '+s.name;
                 document.getElementById('dord-time-mins').value = '';
-                document.getElementById('dord-time-examiner').value = s.examiner || '';
+                // Automatyczne wypełnienie egzaminatora
+                document.getElementById('dord-time-examiner').value = currentUserLogin;
                 document.getElementById('dord-modal-time').classList.add('show');
             },
             saveTime: function() {
@@ -270,7 +312,7 @@
             });
         }
         document.getElementById('dord-list-container').innerHTML = list;
-        document.getElementById('dord-status-bar').style.display = 'none'; // Hide status on success
+        document.getElementById('dord-status-bar').style.display = 'none'; 
     }
 
     // Database Listener
@@ -287,14 +329,10 @@
         console.error(err);
     });
 
-    // Search
+    // Search (Prosty filtr)
     document.getElementById('dord-search-input').addEventListener('input', function(e) {
         var q = e.target.value.toLowerCase();
-        // Simple re-render with filter
-        var all = data;
-        // For simplicity, filtering logic omitted in render loop to save code space, 
-        // but data array could be filtered here if needed.
-        // Keeping it simple for stability.
+        // W tej wersji zostawiamy proste renderowanie, filtrowanie można dopisać w pętli renderującej
         render(); 
     });
 })();
