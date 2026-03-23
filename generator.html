@@ -1,36 +1,100 @@
 <!DOCTYPE html>
-<!-- SKRYPT ZABEZPIECZAJĄCY (Wklej na górę body podstrony) -->
-<script>
-    if (!localStorage.getItem('dordUser') || !localStorage.getItem('dordPass')) {
-        window.location.href = 'index.html'; // Przekierowanie na stronę logowania
-    }
-</script>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Generator Kluczy Egzaminacyjnych</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Kluczy</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; text-align: center; }
-        button { padding: 10px 20px; font-size: 18px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 5px; }
-        #keyDisplay { margin-top: 20px; font-size: 32px; font-weight: bold; color: #333; letter-spacing: 2px; border: 2px dashed #ccc; padding: 10px; display: inline-block; }
+        body { margin: 0; padding: 0; background: #f4f4f4; font-family: 'Segoe UI', system-ui, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+
+        /* Header */
+        .header { background: linear-gradient(135deg, #111 0%, #333 100%); color: #fff; padding: 20px; text-align: center; border-bottom: 4px solid #f1c40f; }
+        .header-logo { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #f1c40f; margin-bottom: 10px; }
+        .header h1 { margin: 0; font-size: 20px; letter-spacing: 0.5px; }
+        .header p { margin: 5px 0 0 0; font-size: 12px; color: #aaa; text-transform: uppercase; }
+
+        /* User Bar */
+        .user-bar { background: #111; color: #fff; padding: 10px 15px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+        .user-bar span { color: #f1c40f; font-weight: 700; }
+        .user-role { font-size: 11px; background: #333; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+        
+        /* Back Link */
+        .top-nav { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .back-link { font-size: 12px; color: #f1c40f; text-decoration: none; font-weight: 700; border: 1px solid #f1c40f; padding: 6px 14px; border-radius: 20px; transition: all 0.2s; background: #fff; }
+        .back-link:hover { background: #f1c40f; color: #000; }
+
+        /* Generator Panel */
+        .panel { padding: 30px 20px; text-align: center; }
+        .key-display-wrapper { margin-bottom: 25px; }
+        .key-label { font-size: 12px; color: #777; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; display: block; }
+        .key-box { background: #f9f9f9; border: 2px dashed #ddd; border-radius: 12px; padding: 20px; font-size: 36px; font-weight: 800; color: #111; letter-spacing: 3px; font-family: 'Courier New', monospace; transition: all 0.3s; }
+        .key-box.active { border-color: #27ae60; background: #eafaf1; color: #27ae60; }
+        
+        .btn-generate { padding: 15px 30px; font-size: 16px; font-weight: 700; cursor: pointer; background: #f1c40f; color: #000; border: none; border-radius: 10px; box-shadow: 0 4px 10px rgba(241,196,15,0.3); transition: transform 0.1s; }
+        .btn-generate:hover { background: #dfb50e; transform: translateY(-2px); }
+        .btn-generate:active { transform: scale(0.98); }
+
+        /* Historia Kluczy (Logi) */
+        .logs-section { padding: 0 20px 40px 20px; display: none; /* Domyślnie ukryty */ }
+        .logs-title { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 10px; border-bottom: 2px solid #eee; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .logs-list { max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 10px; background: #fafafa; }
+        .log-item { padding: 10px 15px; border-bottom: 1px solid #eee; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+        .log-item:last-child { border-bottom: none; }
+        .log-key { font-family: monospace; font-weight: 700; color: #333; background: #e0e0e0; padding: 2px 6px; border-radius: 4px; }
+        .log-info { font-size: 11px; color: #666; text-align: right; }
+        .log-status-used { color: #e74c3c; font-weight: 600; font-size: 10px; text-transform: uppercase; }
+        .log-status-active { color: #27ae60; font-weight: 600; font-size: 10px; text-transform: uppercase; }
+
+        .warning-text { font-size: 12px; color: #888; margin-top: 15px; font-style: italic; }
     </style>
 </head>
 <body>
 
-    <h1>Panel Egzaminatora</h1>
-    <p>Kliknij przycisk, aby wygenerować jednorazowy klucz dostępu do egzaminu.</p>
-    
-    <button onclick="generateKey()">Generuj nowy klucz</button>
-    
-    <div id="keyDisplay">-</div>
+<div class="container">
+    <div class="header">
+        <img src="https://z-cdn-media.chatglm.cn/files/e765f68e-656e-42c9-a93f-c50b8530c618.png?auth_key=1874049393-a1d73f3391ef423084224503a91822aa-0-807a3d0214e239d7f33ff6e69e8664f3" class="header-logo">
+        <h1>Generator Kluczy</h1>
+        <p>Dostęp do egzaminu</p>
+    </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <div class="user-bar">
+        🔐 Zalogowano jako: <span id="displayUserName">-</span>
+        <span id="displayUserRole" class="user-role"></span>
+    </div>
 
-    <script>
-        // TU WKLEJ SWOJĄ KONFIGURACJĘ FIREBASE
-        const firebaseConfig = {
+    <div class="top-nav">
+        <a href="index.html" class="back-link">← Powrót do panelu</a>
+    </div>
+
+    <div class="panel">
+        <div class="key-display-wrapper">
+            <span class="key-label">Twój wygenerowany klucz:</span>
+            <div id="keyDisplay" class="key-box">------</div>
+        </div>
+        <button class="btn-generate" onclick="generateKey()">Generuj nowy klucz</button>
+        <p class="warning-text">Klucz jest jednorazowy. Po użyciu przez kursanta staje się nieaktywny.</p>
+    </div>
+
+    <!-- SEKCJA LOGÓW (Tylko dla uprawnionych) -->
+    <div id="logsSection" class="logs-section">
+        <div class="logs-title">
+            <span>📋 Historia wygenerowanych kluczy</span>
+            <button onclick="loadLogs()" style="font-size:10px; cursor:pointer; border:1px solid #ccc; background:#fff; padding:2px 8px; border-radius:4px;">Odśwież</button>
+        </div>
+        <div id="logsList" class="logs-list">
+            <div style="padding:15px; text-align:center; color:#999; font-size:12px;">Ładowanie...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+    // KONFIGURACJA
+    const firebaseConfig = {
         apiKey: "AIzaSyC-Qxs9Zd0x1_1tpsiAQJE9QYkdPIARPXU",
         authDomain: "dord---ewidencja-kursow.firebaseapp.com",
         databaseURL: "https://dord---ewidencja-kursow-default-rtdb.europe-west1.firebasedatabase.app",
@@ -38,34 +102,117 @@
         storageBucket: "dord---ewidencja-kursow.appspot.com",
         messagingSenderId: "652495067977",
         appId: "1:652495067977:web:61868205fa85f02d905898"
-        };
-        
-        // Inicjalizacja Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        function generateKey() {
-            // Generowanie losowego ciągu znaków (np. X7K9-2M4P)
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let key = '';
-            for (let i = 0; i < 8; i++) {
-                if (i > 0 && i % 4 === 0) key += '-';
-                key += chars.charAt(Math.floor(Math.random() * chars.length));
+    // Zmienne użytkownika
+    let currentUser = {
+        login: localStorage.getItem('dordUser') || 'Nieznany',
+        role: 'Gość'
+    };
+
+    // Inicjalizacja
+    window.onload = function() {
+        checkUserAndInit();
+    };
+
+    function checkUserAndInit() {
+        const displayName = document.getElementById('displayUserName');
+        const displayRole = document.getElementById('displayUserRole');
+        const logsSection = document.getElementById('logsSection');
+
+        // Pobierz rolę z bazy
+        db.ref('users/' + currentUser.login).once('value', (snap) => {
+            const data = snap.val();
+            if (data) {
+                currentUser.role = data.role || 'Użytkownik';
+            } else if (currentUser.login === 'admin') {
+                currentUser.role = 'Admin';
             }
 
-            // Zapisanie klucza w bazie Firebase w gałęzi 'examKeys'
-            // Ustawiamy status na 'active' (aktywny)
-            database.ref('examKeys/' + key).set({
-                status: 'active',
-                createdAt: Date.now()
-            }).then(() => {
-                document.getElementById('keyDisplay').innerText = key;
-                alert('Klucz wygenerowany i zapisany w bazie!');
-            }).catch(error => {
-                console.error("Błąd zapisu:", error);
-                alert('Błąd podczas zapisywania klucza.');
-            });
+            // Wyświetl dane
+            displayName.innerText = currentUser.login;
+            displayRole.innerText = currentUser.role;
+
+            // Sprawdź uprawnienia do logów
+            const allowedRoles = ['Admin', 'Dyrektor Ośrodka', 'Zastępca Dyrektora', 'Kierownik', 'Zastępca Kierownika'];
+            if (allowedRoles.includes(currentUser.role)) {
+                logsSection.style.display = 'block';
+                loadLogs();
+            }
+        });
+    }
+
+    function generateKey() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let key = '';
+        for (let i = 0; i < 8; i++) {
+            if (i > 0 && i % 4 === 0) key += '-';
+            key += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-    </script>
+
+        const display = document.getElementById('keyDisplay');
+        
+        // Zapis w bazie z informacją kto stworzył
+        db.ref('examKeys/' + key).set({
+            status: 'active',
+            createdAt: Date.now(),
+            createdBy: currentUser.login // Zapisywanie autora
+        }).then(() => {
+            display.innerText = key;
+            display.classList.add('active');
+            
+            // Dodaj dźwięk lub wibrację (opcjonalnie)
+            
+            // Odśwież logi jeśli są widoczne
+            if (document.getElementById('logsSection').style.display === 'block') {
+                loadLogs();
+            }
+        }).catch(err => {
+            console.error(err);
+            alert('Błąd zapisu w bazie.');
+        });
+    }
+
+    function loadLogs() {
+        const list = document.getElementById('logsList');
+        list.innerHTML = '<div style="padding:15px; text-align:center; color:#999; font-size:12px;">Ładowanie historii...</div>';
+
+        db.ref('examKeys').orderByChild('createdAt').limitToLast(20).once('value', (snap) => {
+            const data = snap.val();
+            if (!data) {
+                list.innerHTML = '<div style="padding:15px; text-align:center; color:#999; font-size:12px;">Brak wygenerowanych kluczy.</div>';
+                return;
+            }
+
+            // Sortowanie malejące (najnowsze na górze)
+            const keys = Object.keys(data).map(k => ({id: k, ...data[k]})).sort((a,b) => b.createdAt - a.createdAt);
+            
+            let html = '';
+            keys.forEach(k => {
+                const date = k.createdAt ? new Date(k.createdAt).toLocaleString('pl-PL') : '-';
+                const statusClass = k.status === 'used' ? 'log-status-used' : 'log-status-active';
+                const statusText = k.status === 'used' ? 'Zużyty' : 'Aktywny';
+                const usedInfo = k.usedAt ? `<br>Użyto: ${new Date(k.usedAt).toLocaleString('pl-PL')}` : '';
+
+                html += `
+                    <div class="log-item">
+                        <div>
+                            <span class="log-key">${k.id}</span>
+                            <div style="font-size:10px; color:#888; margin-top:2px">Utworzył: ${k.createdBy || 'System'}</div>
+                        </div>
+                        <div class="log-info">
+                            <span class="${statusClass}">${statusText}</span>
+                            <div>${date}</div>
+                            ${usedInfo}
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        });
+    }
+</script>
 </body>
 </html>
