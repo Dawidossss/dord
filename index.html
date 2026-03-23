@@ -5,37 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Pracownika DORD</title>
     <style>
-        /* --- STYLIZACJA --- */
         body { margin: 0; padding: 0; background: #f4f4f4; }
         #dord-root-panel * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         #dord-root-panel { max-width: 800px; margin: 0 auto; background: #fff; padding-bottom: 50px; position: relative; min-height: 100vh; }
 
-        /* Header */
         .dord-main-header { background: linear-gradient(135deg, #111 0%, #333 100%); color: #fff; padding: 40px 20px; text-align: center; border-radius: 0 0 20px 20px; margin-bottom: 30px; }
         .dord-main-logo { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 15px; border: 3px solid #f1c40f; }
         .dord-main-title { font-size: 24px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
         .dord-main-subtitle { font-size: 12px; color: #aaa; margin-top: 5px; text-transform: uppercase; }
 
-        /* Grid 2x2 */
         .dord-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
         @media (max-width: 500px) { .dord-grid { grid-template-columns: 1fr; } }
 
-        /* Karty Menu */
-        .dord-menu-card { 
-            background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 25px 20px; 
-            text-align: center; text-decoration: none; color: #111;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s; display: block;
-            border-bottom: 4px solid transparent;
-        }
+        .dord-menu-card { background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 25px 20px; text-align: center; text-decoration: none; color: #111; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s; display: block; border-bottom: 4px solid transparent; }
         .dord-menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-bottom-color: #f1c40f; }
         .dord-menu-icon { font-size: 36px; margin-bottom: 12px; display: block; }
         .dord-menu-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 5px; }
         .dord-menu-desc { font-size: 11px; color: #888; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Stopka */
         .dord-footer { text-align: center; margin-top: 40px; color: #ccc; font-size: 11px; padding: 0 20px; }
 
-        /* --- SYSTEM LOGOWANIA --- */
         #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
         .login-box { background: #fff; padding: 30px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .login-box h2 { margin-top: 0; margin-bottom: 20px; }
@@ -44,12 +33,10 @@
         .login-box button:hover { background: #333; }
         .login-error { color: #e74c3c; font-size: 12px; margin-bottom: 10px; min-height: 15px; }
         
-        /* Wyloguj i Admin Panel przyciski w nagłówku */
         .header-actions { margin-top: 15px; }
         .btn-logout { background: transparent; border: 1px solid #f1c40f; color: #f1c40f; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; }
         .btn-admin { background: #e74c3c; color: white; border: none; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; margin-right: 10px; display: none; }
 
-        /* Modale */
         #changePassModal, #adminModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; }
     </style>
 </head>
@@ -150,24 +137,26 @@
 
 <script>
     // ==================================================
-    // KONFIGURACJA - TU MUSISZ WPISAĆ DANE Z FIREBASE
+    // KONFIGURACJA TWOJEJ BAZY (WPISANA AUTOMATYCZNIE)
     // ==================================================
     const firebaseConfig = {
-        apiKey: "AIzaSyC-Qxs9Zd0x1_1tpsiAQJE9QYkdPIARPXU", 
-        authDomain: "dord---ewidencja-kursow.firebaseapp.com", 
-        databaseURL: "https://dord---ewidencja-kursow-default-rtdb.europe-west1.firebasedatabase.app/", 
-        projectId: "dord---ewidencja-kursow", 
-        storageBucket: "dord---ewidencja-kursow.appspot.com", 
-        messagingSenderId: "652495067977", 
-        appId: "1:652495067977:web:61868205fa85f02d905898" 
+        apiKey: "AIzaSyC-Qxs9Zd0x1_1tpsiAQJE9QYkdPIARPXU",
+        authDomain: "dord---ewidencja-kursow.firebaseapp.com",
+        databaseURL: "https://dord---ewidencja-kursow-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "dord---ewidencja-kursow",
+        storageBucket: "dord---ewidencja-kursow.firebasestorage.app",
+        messagingSenderId: "652495067977",
+        appId: "1:652495067977:web:61868205fa85f02d905898",
+        measurementId: "G-26TGJXYS6X"
     };
     
-    // Inicjalizacja
+    // Inicjalizacja Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     let currentUser = null;
 
+    // Sprawdzenie przy starcie
     window.onload = function() {
         const savedUser = localStorage.getItem('dordUser');
         const savedPass = localStorage.getItem('dordPass');
@@ -181,7 +170,8 @@
 
     function attemptLogin() {
         const user = document.getElementById('loginUsername').value.trim();
-        const pass = document.getElementById('loginPassword').value;
+        const pass = document.getElementById('loginPassword').value.trim(); // Dodałem trim, żeby usunąć spacje
+        
         if(!user || !pass) {
              document.getElementById('loginError').innerText = "Uzupełnij pola.";
              return;
@@ -190,28 +180,41 @@
     }
 
     function verifyLogin(username, password, isAutoLogin) {
+        // Odczyt z bazy
         db.ref('users/' + username).once('value', (snapshot) => {
             const data = snapshot.val();
             
+            // Dodatkowe logowanie do konsoli (dla testów, czy baza odpowiada)
+            console.log("Odpowiedź z bazy dla użytkownika " + username + ":", data);
+
             if (data && data.password === password) {
+                // LOGOWANIE UDANE
                 currentUser = { username: username, role: data.role };
                 localStorage.setItem('dordUser', username);
                 localStorage.setItem('dordPass', password);
 
                 if (data.forceChange === true) {
+                    // Pierwsze logowanie - zmiana hasła
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('changePassModal').style.display = 'flex';
                 } else {
+                    // Normalne wejście
                     enterSystem();
                 }
             } else {
+                // LOGOWANIE NIEUDANE
                 if (!isAutoLogin) {
                     document.getElementById('loginError').innerText = "Błędny login lub hasło.";
                 }
+                // Czyścimy złe dane z pamięci
                 localStorage.removeItem('dordUser');
                 localStorage.removeItem('dordPass');
                 document.getElementById('login-overlay').style.display = 'flex';
             }
+        }, (error) => {
+            // Błąd połączenia z bazą
+            console.error("Błąd bazy danych:", error);
+            document.getElementById('loginError').innerText = "Błąd połączenia z bazą.";
         });
     }
 
@@ -221,14 +224,15 @@
         document.getElementById('mainContent').style.display = 'block';
         document.getElementById('welcomeUser').innerText = currentUser.username;
 
+        // Jeśli admin, pokaż przycisk dodawania użytkowników
         if (currentUser.role === 'admin') {
             document.getElementById('btnAdminPanel').style.display = 'inline-block';
         }
     }
 
     function changePassword() {
-        const p1 = document.getElementById('newPass1').value;
-        const p2 = document.getElementById('newPass2').value;
+        const p1 = document.getElementById('newPass1').value.trim();
+        const p2 = document.getElementById('newPass2').value.trim();
         
         if (p1.length < 4) { document.getElementById('changePassError').innerText = "Hasło min. 4 znaki."; return; }
         if (p1 !== p2) { document.getElementById('changePassError').innerText = "Hasła różnią się."; return; }
@@ -251,7 +255,7 @@
     function createUser() {
         if (currentUser.role !== 'admin') return;
         const newLogin = document.getElementById('newUserLogin').value.trim();
-        const newPass = document.getElementById('newUserPass').value;
+        const newPass = document.getElementById('newUserPass').value.trim();
 
         if (!newLogin || !newPass) { document.getElementById('adminMsg').innerText = "Uzupełnij pola."; return; }
 
@@ -265,9 +269,6 @@
             document.getElementById('newUserPass').value = '';
         });
     }
-</script>
-</body>
-</html>
 </script>
 </body>
 </html>
