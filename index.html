@@ -65,7 +65,7 @@
         .btn-mgmt-del { background: #e74c3c; color: white; }
         .btn-mgmt-cancel { background: #eee; color: #333; }
 
-        /* Modal Dodawania (zaktualizowany) */
+        /* Modal Dodawania */
         #adminModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 10001; justify-content: center; align-items: center; }
         .add-user-form { text-align: left; }
         .add-user-form .form-group { margin-bottom: 10px; }
@@ -200,6 +200,13 @@
                 <span class="dord-menu-name">Generator Kluczy</span>
                 <span class="dord-menu-desc">Dostęp do egzaminu</span>
             </a>
+
+            <!-- NOWA POZYCJA: WYNIKI EGZAMINÓW -->
+            <a href="egzaminteoretycznylogi.html" class="dord-menu-card">
+                <span class="dord-menu-icon">📊</span>
+                <span class="dord-menu-name">Wyniki Egzaminów</span>
+                <span class="dord-menu-desc">Logi i statystyki</span>
+            </a>
         </div>
 
         <div class="dord-footer">
@@ -266,7 +273,6 @@
             
             if (data && data.password === password) {
                 // Logowanie udane
-                // Zapisz pełne dane do obiektu
                 currentUser = { 
                     username: username, 
                     role: data.role || 'user', 
@@ -298,21 +304,16 @@
         document.getElementById('changePassModal').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
         
-        // Wyświetl dane użytkownika
         document.getElementById('welcomeUser').innerText = currentUser.username;
         document.getElementById('userRoleBadge').innerText = currentUser.role;
 
-        // Zarządzanie widocznością przycisków
-        const isAdmin = (currentUser.username === 'admin'); // Admin to konkretny login
+        const isAdmin = (currentUser.username === 'admin');
         const isDirector = (currentUser.role === 'Dyrektor Ośrodka');
-        const isDeputyDirector = (currentUser.role === 'Zastępca Dyrektora'); // Opcjonalnie też daj uprawnienia
 
-        // Przycisk "Dodaj konto" - tylko Admin
         if (isAdmin) {
             document.getElementById('btnAdminPanel').style.display = 'inline-block';
         }
 
-        // Przycisk "Zarządzaj" - Admin lub Dyrektor
         if (isAdmin || isDirector) {
             document.getElementById('btnMgmtPanel').style.display = 'inline-block';
         }
@@ -346,17 +347,15 @@
 
     function openAddModal() {
         document.getElementById('newUserLogin').value = '';
-        document.getElementById('newUserPass').value = 'start123'; // Domyślne hasło
+        document.getElementById('newUserPass').value = 'start123';
         document.getElementById('adminModal').style.display = 'flex';
     }
 
-    // Tworzenie użytkownika
     function createUser() {
         const login = document.getElementById('newUserLogin').value.trim();
         const pass = document.getElementById('newUserPass').value.trim();
         const role = document.getElementById('newUserRole').value;
         
-        // Uprawnienia
         const perms = {
             teoretyczny: document.getElementById('perm_t').checked,
             praktyczny: document.getElementById('perm_p').checked,
@@ -377,7 +376,7 @@
     }
 
     // ==================================================
-    // PANEL ZARZĄDZANIA (LISTA UŻYTKOWNIKÓW)
+    // PANEL ZARZĄDZANIA
     // ==================================================
 
     function openManagement() {
@@ -401,8 +400,6 @@
             for (let login in users) {
                 const u = users[login];
                 const perms = u.permissions || {};
-                
-                // Sprawdź czy to admin (siebie nie można usunąć przez panel)
                 const isSelf = (login === currentUser.username);
                 const isSuperAdmin = (login === 'admin');
 
@@ -416,7 +413,6 @@
                             <span class="user-role-label">${u.role}</span>
                         </div>
                         
-                        <!-- Formularz edycji -->
                         <div class="mgmt-row">
                             <label>Stanowisko:</label>
                             <select id="role-${login}" ${isSuperAdmin ? 'disabled' : ''}>
@@ -457,7 +453,6 @@
             permissions: newPerms
         }).then(() => {
             alert('Zaktualizowano użytkownika ' + login);
-            // Odśwież listę
             loadUsersForManagement();
         }).catch(e => alert('Błąd: ' + e.message));
     }
