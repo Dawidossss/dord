@@ -4,14 +4,14 @@
         window.location.href = 'index.html'; // Wyrzuć na stronę logowania
     }
 </script>
-<!-- SYSTEM FAKTUR - WERSJA POPRAWIONA (STYL DORD) -->
+<!-- SYSTEM FAKTUR - WERSJA Z LOGOWANIEM -->
 <div id="dord-invoices-root">
 <style>
 /* Reset i izolacja */
 #dord-invoices-root * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 #dord-invoices-root { max-width: 700px; margin: 0 auto; background: #fff; padding-bottom: 40px; }
 
-/* Header (Identyczny jak w Ewidencji) */
+/* Header */
 .dord-inv-header { background: #fff; border-bottom: 2px solid #f1c40f; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 .dord-inv-header-left { display: flex; align-items: center; gap: 15px; }
 .dord-inv-logo { width: 40px; height: 40px; object-fit: contain; }
@@ -20,7 +20,7 @@
 .dord-back-link { font-size: 12px; color: #f1c40f; text-decoration: none; font-weight: 700; border: 1px solid #f1c40f; padding: 6px 14px; border-radius: 20px; transition: all 0.2s; background: #fff; }
 .dord-back-link:hover { background: #f1c40f; color: #000; }
 
-/* Statystyki (Karty zamiast czarnego paska) */
+/* Statystyki */
 .dord-inv-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 15px 20px 15px; }
 .dord-inv-stat-card { background: #fff; border: 1px solid #eee; border-radius: 14px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
 .dord-inv-stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
@@ -58,12 +58,17 @@
 
 .dord-inv-empty { text-align: center; color: #bbb; padding: 40px 20px; margin: 0 15px; background: #fafafa; border-radius: 12px; font-size: 14px; }
 
+/* User Info Box */
+.user-info-box { background: #111; color: #fff; padding: 10px 15px; margin: 0 15px 20px 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.user-info-box span { color: #f1c40f; font-weight: 700; }
+.user-role-small { font-size: 11px; background: #333; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+
 /* Mobile */
 @media (max-width: 500px) {
   .dord-inv-stats-grid { grid-template-columns: 1fr; margin: 0 10px 15px 10px; }
   .dord-inv-panel { margin: 0 10px 20px 10px; padding: 15px; }
   .dord-inv-grid { grid-template-columns: 1fr; }
-  .dord-inv-card { margin: 0 10px 10px 10px; }
+  .dord-inv-card { margin: 0 10px 10px 10px; flex-wrap: wrap; }
   .dord-inv-list-header { margin: 0 10px 15px 10px; }
 }
 </style>
@@ -78,6 +83,12 @@
         </div>
     </div>
     <a href="index.html" class="dord-back-link">← Powrót</a>
+</div>
+
+<!-- Wyświetlanie zalogowanego użytkownika -->
+<div class="user-info-box">
+    🔐 Zalogowano jako: <span id="displayUserName">-</span>
+    <span id="displayUserRole" class="user-role-small"></span>
 </div>
 
 <!-- Stats -->
@@ -114,7 +125,8 @@
         </div>
         <div class="dord-inv-field">
             <label class="dord-inv-label">Wystawił</label>
-            <input class="dord-inv-input" id="inv-input-issuer" placeholder="Twoje imię">
+            <!-- Tutaj będzie automatycznie wstawiany użytkownik -->
+            <input class="dord-inv-input" id="inv-input-issuer" placeholder="Automatycznie" readonly style="background: #f5f5f5; color: #555;">
         </div>
     </div>
     <button class="dord-inv-btn-add" id="inv-btn-add">＋ Dodaj do rejestru</button>
@@ -145,10 +157,32 @@
 
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     var db = firebase.database();
+    
+    // --- AUTOMATYCZNE UZUPEŁNIANIE DANYCH UŻYTKOWNIKA ---
+    var currentUserLogin = localStorage.getItem('dordUser');
+    var issuerInput = document.getElementById('inv-input-issuer');
+    var displayName = document.getElementById('displayUserName');
+    var displayRole = document.getElementById('displayUserRole');
+
+    if (currentUserLogin) {
+        // Pobierz szczegóły (rolę) z bazy
+        db.ref('users/' + currentUserLogin).once('value', function(snap) {
+            var userData = snap.val();
+            if (userData) {
+                // Ustaw pole "Wystawił"
+                issuerInput.value = currentUserLogin; 
+                
+                // Wyświetl dane w pasku info
+                displayName.innerText = currentUserLogin;
+                displayRole.innerText = userData.role || 'Użytkownik';
+            }
+        });
+    }
+
+    // Reszta logiki faktur
     var ref = db.ref('invoices');
     var data = [];
 
-    // Helpers
     function esc(s) { return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     function formatMoney(v) { return v.toLocaleString('pl-PL', { minimumFractionDigits: 2 }) + ' zł'; }
     function parseAmount(str) {
@@ -183,7 +217,7 @@
             html += '<div class="dord-inv-card">'+
                 '<div class="dord-inv-info">'+
                     '<div class="dord-inv-client">'+esc(inv.client)+'</div>'+
-                    '<div class="dord-inv-meta">'+fmtDate(inv.date)+(inv.issuer ? ' · '+esc(inv.issuer) : '')+'</div>'+
+                    '<div class="dord-inv-meta">'+fmtDate(inv.date)+(inv.issuer ? ' · Wystawił: '+esc(inv.issuer) : '')+'</div>'+
                 '</div>'+
                 '<div class="dord-inv-money"><div class="dord-inv-amount">'+formatMoney(inv.amount)+'</div></div>'+
                 '<button class="dord-inv-delete" onclick="window.invDelete(\''+inv.id+'\')">Usuń</button>'+
@@ -202,7 +236,7 @@
     document.getElementById('inv-btn-add').addEventListener('click', function() {
         var client = document.getElementById('inv-input-client').value.trim();
         var amountStr = document.getElementById('inv-input-amount').value.trim();
-        var issuer = document.getElementById('inv-input-issuer').value.trim();
+        var issuer = document.getElementById('inv-input-issuer').value.trim(); // Pobrane z pola (już uzupełnione)
 
         if(!client || !amountStr) return alert('Uzupełnij klienta i kwotę.');
         var amount = parseAmount(amountStr);
@@ -212,6 +246,7 @@
           .then(function() {
               document.getElementById('inv-input-client').value = '';
               document.getElementById('inv-input-amount').value = '';
+              // issuer zostaje - wciąż zalogowany ten sam użytkownik
           }).catch(function(e) { alert('Błąd: '+e.message); });
     });
 
