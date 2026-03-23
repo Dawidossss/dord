@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Generator Kluczy Egzaminacyjnych</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; text-align: center; }
+        button { padding: 10px 20px; font-size: 18px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 5px; }
+        #keyDisplay { margin-top: 20px; font-size: 32px; font-weight: bold; color: #333; letter-spacing: 2px; border: 2px dashed #ccc; padding: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <h1>Panel Egzaminatora</h1>
+    <p>Kliknij przycisk, aby wygenerować jednorazowy klucz dostępu do egzaminu.</p>
+    
+    <button onclick="generateKey()">Generuj nowy klucz</button>
+    
+    <div id="keyDisplay">-</div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // TU WKLEJ SWOJĄ KONFIGURACJĘ FIREBASE
+        const firebaseConfig = {
+            apiKey: "TWOJ_API_KEY",
+            authDomain: "TWOJ_AUTH_DOMAIN",
+            databaseURL: "TWOJ_DATABASE_URL", // Ważne: URL bazy danych
+            projectId: "TWOJ_PROJECT_ID",
+            storageBucket: "TWOJ_STORAGE_BUCKET",
+            messagingSenderId: "TWOJ_MESSAGING_SENDER_ID",
+            appId: "TWOJ_APP_ID"
+        };
+        
+        // Inicjalizacja Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function generateKey() {
+            // Generowanie losowego ciągu znaków (np. X7K9-2M4P)
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let key = '';
+            for (let i = 0; i < 8; i++) {
+                if (i > 0 && i % 4 === 0) key += '-';
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            // Zapisanie klucza w bazie Firebase w gałęzi 'examKeys'
+            // Ustawiamy status na 'active' (aktywny)
+            database.ref('examKeys/' + key).set({
+                status: 'active',
+                createdAt: Date.now()
+            }).then(() => {
+                document.getElementById('keyDisplay').innerText = key;
+                alert('Klucz wygenerowany i zapisany w bazie!');
+            }).catch(error => {
+                console.error("Błąd zapisu:", error);
+                alert('Błąd podczas zapisywania klucza.');
+            });
+        }
+    </script>
+</body>
+</html>
