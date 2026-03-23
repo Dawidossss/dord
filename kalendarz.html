@@ -1,4 +1,10 @@
 <!-- TERMINARZ - WERSJA FIREBASE -->
+<!-- SKRYPT ZABEZPIECZAJĄCY (Wklej na górę body podstrony) -->
+<script>
+    if (!localStorage.getItem('dordUser') || !localStorage.getItem('dordPass')) {
+        window.location.href = 'index.html'; // Przekierowanie na stronę logowania
+    }
+</script>
 <div id="dord-calendar-root">
 <style>
 /* Izolacja i reset */
