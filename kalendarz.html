@@ -1,17 +1,17 @@
-<!-- TERMINARZ - WERSJA FIREBASE -->
-<!-- SKRYPT ZABEZPIECZAJĄCY (Wklej na górę body podstrony) -->
+<!-- SKRYPT ZABEZPIECZAJĄCY -->
 <script>
     if (!localStorage.getItem('dordUser') || !localStorage.getItem('dordPass')) {
-        window.location.href = 'index.html'; // Przekierowanie na stronę logowania
+        window.location.href = 'index.html';
     }
 </script>
+<!-- TERMINARZ - WERSJA Z LOGOWANIEM -->
 <div id="dord-calendar-root">
 <style>
 /* Izolacja i reset */
 #dord-calendar-root * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
 #dord-calendar-root { max-width: 900px; margin: 0 auto; background: #fff; padding-bottom: 40px; }
 
-/* Header (Spójny standard) */
+/* Header */
 .dord-cal-header { background: #fff; border-bottom: 2px solid #f1c40f; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 .dord-cal-header-left { display: flex; align-items: center; gap: 15px; }
 .dord-cal-logo { width: 40px; height: 40px; object-fit: contain; }
@@ -19,6 +19,11 @@
 .dord-cal-sub { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
 .dord-back-link { font-size: 12px; color: #f1c40f; text-decoration: none; font-weight: 700; border: 1px solid #f1c40f; padding: 6px 14px; border-radius: 20px; transition: all 0.2s; background: #fff; }
 .dord-back-link:hover { background: #f1c40f; color: #000; }
+
+/* User Info Box */
+.user-info-box { background: #111; color: #fff; padding: 10px 15px; margin: 0 15px 20px 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.user-info-box span { color: #f1c40f; font-weight: 700; }
+.user-role-small { font-size: 11px; background: #333; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
 
 /* Controls */
 .dord-cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 15px; flex-wrap: wrap; gap: 10px; }
@@ -54,7 +59,7 @@
 .dord-cal-modal { background: #fff; padding: 25px; border-radius: 16px; width: 100%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popIn 0.2s; max-height: 90vh; overflow-y: auto; }
 .dord-cal-modal-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; color: #111; }
 
-/* Formularz w modalu */
+/* Formularz */
 .dord-cal-grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .dord-cal-field { margin-bottom: 12px; }
 .dord-cal-label { font-size: 11px; font-weight: 700; color: #777; text-transform: uppercase; display: block; margin-bottom: 5px; }
@@ -68,7 +73,7 @@
 .dord-cal-pill.active-green { border-color: #2ecc71; background: #2ecc71; color: #fff; }
 .dord-cal-pill.active-gray { border-color: #95a5a6; background: #95a5a6; color: #fff; }
 
-/* Przyciski w modalu */
+/* Przyciski */
 .dord-cal-btn-row { display: flex; gap: 8px; margin-top: 10px; }
 .dord-cal-btn-save { flex: 1; padding: 12px; background: #f1c40f; color: #000; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
 .dord-cal-btn-cancel { flex: 1; padding: 12px; background: #f0f0f0; color: #555; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; text-align: center; }
@@ -94,6 +99,12 @@
         </div>
     </div>
     <a href="index.html" class="dord-back-link">← Powrót</a>
+</div>
+
+<!-- Wyświetlanie zalogowanego użytkownika -->
+<div class="user-info-box">
+    🔐 Zalogowano jako: <span id="displayUserName">-</span>
+    <span id="displayUserRole" class="user-role-small"></span>
 </div>
 
 <div class="dord-cal-controls">
@@ -129,7 +140,7 @@
         </div>
         <div class="dord-cal-field">
             <label class="dord-cal-label">Egzaminator</label>
-            <input type="text" class="dord-cal-input" id="dordCalInputExaminer" placeholder="np. mgr Adam Nowak">
+            <input type="text" class="dord-cal-input" id="dordCalInputExaminer" placeholder="Automatycznie" readonly style="background:#f5f5f5; color:#555;">
         </div>
         
         <div class="dord-cal-field">
@@ -184,10 +195,33 @@
 
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     var db = firebase.database();
-    var ref = db.ref('calendar'); // Ścieżka 'calendar'
+    var ref = db.ref('calendar');
     var data = [];
     var currentDate = new Date();
     var selectedId = null;
+
+    // --- ZMIENNE UŻYTKOWNIKA ---
+    var currentUserLogin = localStorage.getItem('dordUser') || 'Nieznany';
+    var examinerInput = document.getElementById('dordCalInputExaminer');
+    var displayName = document.getElementById('displayUserName');
+    var displayRole = document.getElementById('displayUserRole');
+
+    // Pobranie roli i ustawienie pól
+    if (currentUserLogin) {
+        db.ref('users/' + currentUserLogin).once('value', function(snap) {
+            var userData = snap.val();
+            if (userData) {
+                examinerInput.value = currentUserLogin;
+                displayName.innerText = currentUserLogin;
+                displayRole.innerText = userData.role || 'Użytkownik';
+            } else {
+                // Fallback dla admina lub braku danych
+                examinerInput.value = currentUserLogin;
+                displayName.innerText = currentUserLogin;
+                displayRole.innerText = 'Admin';
+            }
+        });
+    }
 
     // Helpers
     function esc(s) { return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -226,7 +260,6 @@
                 var isToday = today.getDate()===i && today.getMonth()===month && today.getFullYear()===year;
                 var dateStr = year+'-'+String(month+1).padStart(2,'0')+'-'+String(i).padStart(2,'0');
                 
-                // Filtrowanie wydarzeń
                 var dayEvents = data.filter(function(e) { return e.date === dateStr; });
                 var chipsHtml = '';
                 
@@ -281,7 +314,6 @@
             document.getElementById('dordCalInputDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('dordCalInputTime').value = '10:00';
             document.getElementById('dordCalInputName').value = '';
-            document.getElementById('dordCalInputExaminer').value = '';
             document.getElementById('dordCalInputNotes').value = '';
             document.getElementById('dordCalInputOtherCat').value = '';
             document.getElementById('dordCalInputOtherCat').classList.add('hidden');
@@ -291,6 +323,9 @@
                 if(p.dataset.val === 'B') p.className = 'dord-cal-pill active-yellow';
                 else p.className = 'dord-cal-pill';
             });
+            
+            // Ustaw egzaminatora na zalogowanego użytkownika (już ustawione w onload, ale dla pewności)
+            document.getElementById('dordCalInputExaminer').value = currentUserLogin;
             
             document.getElementById('dordCalModalAdd').classList.add('show');
         },
@@ -307,7 +342,6 @@
             var examiner = document.getElementById('dordCalInputExaminer').value.trim();
             var notes = document.getElementById('dordCalInputNotes').value.trim();
             
-            // Pobierz kategorię
             var activePill = document.querySelector('#dordCalPillsCat .dord-cal-pill[class*="active"]');
             var cat = activePill ? activePill.dataset.val : 'B';
             
