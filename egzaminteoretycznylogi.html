@@ -1,68 +1,149 @@
-<!-- SKRYPT SPRAWDZAJĄCY LOGOWANIE -->
-<script>
-    if (!localStorage.getItem('dordUser') || !localStorage.getItem('dordPass')) {
-        window.location.href = 'index.html'; // Przekierowanie na stronę logowania
-    }
-</script>
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DORD - Panel Pracownika</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Historia Egzaminów - DORD</title>
     <style>
-        :root {
-            --bg: #f8f9fa; --card: #ffffff; --text: #111; --muted: #6c757d;
-            --primary: #f1c40f; --danger: #e74c3c; --success: #2ecc71;
+        body { margin: 0; padding: 0; background: #f4f4f4; font-family: 'Segoe UI', system-ui, sans-serif; color: #111; }
+        
+        /* Kontener główny */
+        .app-container { max-width: 800px; margin: 0 auto; background: #fff; min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        
+        /* HEADER */
+        .app-header { 
+            background: #fff; padding: 15px 20px; border-bottom: 1px solid #eee; 
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+        .header-left { display: flex; align-items: center; gap: 10px; }
+        .header-logo { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #f1c40f; }
+        .header-title { font-size: 16px; font-weight: 700; line-height: 1.2; }
+        .header-subtitle { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .container { max-width: 1000px; margin: 0 auto; }
-        .header { background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 20px; font-weight: 800; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-info { text-align: right; }
+        .user-name { font-weight: 700; font-size: 14px; }
+        .user-role { font-size: 10px; color: #888; text-transform: uppercase; }
+        .btn-logout { background: transparent; border: 1px solid #ddd; color: #666; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .btn-logout:hover { border-color: #111; color: #111; }
+
+        /* TREŚĆ */
+        .page-content { padding: 20px; }
+        .page-title { font-size: 20px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         
-        .log-list { display: flex; flex-direction: column; gap: 15px; }
+        /* Statystyki */
+        .stats-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .stat-box { flex: 1; background: #f9f9f9; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #eee; }
+        .stat-val { font-size: 24px; font-weight: 800; color: #111; }
+        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; margin-top: 5px; }
+        .stat-box.green .stat-val { color: #27ae60; }
+        .stat-box.red .stat-val { color: #e74c3c; }
+
+        /* Log List */
+        .log-list { display: flex; flex-direction: column; gap: 10px; }
         
-        .log-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #eee; }
-        .log-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-left: 5px solid #ccc; }
-        .log-header.pass { border-left-color: var(--success); }
-        .log-header.fail { border-left-color: var(--danger); }
+        .log-card { background: #fff; border: 1px solid #eee; border-radius: 12px; overflow: hidden; transition: box-shadow 0.2s; }
+        .log-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         
-        .log-info h3 { font-size: 16px; margin-bottom: 5px; }
-        .log-info p { font-size: 12px; color: var(--muted); }
+        .log-header { 
+            padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            border-left: 5px solid #ccc;
+        }
+        .log-card.pass .log-header { border-left-color: #27ae60; }
+        .log-card.fail .log-header { border-left-color: #e74c3c; }
+        .log-card.terminated .log-header { border-left-color: #f39c12; }
+
+        .log-info h3 { font-size: 15px; margin: 0 0 5px 0; font-weight: 700; }
+        .log-info p { font-size: 11px; color: #888; margin: 0; }
         
-        .log-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; color: #fff; }
-        .log-badge.pass { background: var(--success); }
-        .log-badge.fail { background: var(--danger); }
+        .log-right { display: flex; align-items: center; gap: 15px; }
+        .log-score { font-size: 18px; font-weight: 800; color: #111; }
+        .log-badge { 
+            padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; 
+            color: #fff;
+        }
+        .badge-pass { background: #27ae60; }
+        .badge-fail { background: #e74c3c; }
+        .badge-term { background: #f39c12; color: #000; }
+
+        /* Szczegóły */
+        .log-details { display: none; background: #fafafa; border-top: 1px solid #eee; padding: 15px; }
+        .detail-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .detail-table th { text-align: left; color: #888; font-weight: 600; padding-bottom: 5px; border-bottom: 1px solid #eee; }
+        .detail-table td { padding: 8px 0; border-bottom: 1px solid #f4f4f4; }
+        .detail-table tr:last-child td { border-bottom: none; }
         
-        .log-details { display: none; padding: 20px; border-top: 1px solid #eee; background: #fafafa; }
-        .details-grid { display: grid; gap: 10px; }
+        .status-icon { font-size: 14px; margin-right: 5px; }
+        .correct { color: #27ae60; }
+        .wrong { color: #e74c3c; }
+
+        /* Loading & Empty */
+        .loading-screen { text-align: center; padding: 50px 20px; color: #888; }
+        .loading-spinner { width: 30px; height: 30px; border: 3px solid #eee; border-top-color: #f1c40f; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         
-        .detail-item { background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #eee; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
-        .detail-item.wrong { border-left: 3px solid var(--danger); }
-        .detail-item.correct { border-left: 3px solid var(--success); }
-        
-        .loading { text-align: center; padding: 40px; color: var(--muted); }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>Panel Egzaminatora DORD</h1>
-        <div style="font-size: 12px; color: var(--muted);">Historia egzaminów</div>
+<div class="app-container">
+    <!-- HEADER -->
+    <div class="app-header">
+        <div class="header-left">
+            <img src="https://z-cdn-media.chatglm.cn/files/e765f68e-656e-42c9-a93f-c50b8530c618.png?auth_key=1874049393-a1d73f3391ef423084224503a91822aa-0-807a3d0214e239d7f33ff6e69e8664f3" class="header-logo">
+            <div>
+                <div class="header-title">Panel Egzaminatora DORD</div>
+                <div class="header-subtitle">Historia Egzaminów Teoretycznych</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <div class="user-name" id="headerUserName">-</div>
+                <div class="user-role" id="headerUserRole">-</div>
+            </div>
+            <button class="btn-logout" onclick="logout()">Wyloguj</button>
+        </div>
     </div>
 
-    <div id="logsContainer" class="log-list">
-        <div class="loading">Ładowanie danych...</div>
+    <!-- TREŚĆ -->
+    <div class="page-content">
+        
+        <div class="page-title">📊 Historia Sesji</div>
+
+        <!-- Statystyki -->
+        <div class="stats-bar">
+            <div class="stat-box">
+                <div class="stat-val" id="statTotal">0</div>
+                <div class="stat-label">Wszystkich</div>
+            </div>
+            <div class="stat-box green">
+                <div class="stat-val" id="statPass">0</div>
+                <div class="stat-label">Zaliczonych</div>
+            </div>
+            <div class="stat-box red">
+                <div class="stat-val" id="statFail">0</div>
+                <div class="stat-label">Niezaliczonych</div>
+            </div>
+        </div>
+
+        <!-- Lista logów -->
+        <div id="logsContainer" class="log-list">
+            <div class="loading-screen">
+                <div class="loading-spinner"></div>
+                <div>Ładowanie danych...</div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
+    // ==================================================
+    // KONFIGURACJA I SESJA
+    // ==================================================
     const firebaseConfig = {
         apiKey: "AIzaSyC-Qxs9Zd0x1_1tpsiAQJE9QYkdPIARPXU",
         authDomain: "dord---ewidencja-kursow.firebaseapp.com",
@@ -75,69 +156,126 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const container = document.getElementById('logsContainer');
+    // Sprawdzenie logowania
+    const savedUser = localStorage.getItem('dordUser');
+    const savedPass = localStorage.getItem('dordPass');
 
-    // Pobierz logi (najnowsze na górze)
-    db.ref('examLogs').orderByChild('date').limitToLast(50).on('value', snap => {
-        container.innerHTML = '';
-        if(!snap.exists()) {
-            container.innerHTML = '<div class="loading">Brak wyników do wyświetlenia.</div>';
-            return;
+    if (!savedUser || !savedPass) {
+        window.location.href = "index.html"; // Przekieruj do głównego panelu logowania
+    } else {
+        initPage();
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "index.html";
+    }
+
+    async function initPage() {
+        // Pobranie danych użytkownika do nagłówka
+        const userSnap = await db.ref('users/' + savedUser).once('value');
+        if (userSnap.exists()) {
+            const u = userSnap.val();
+            document.getElementById('headerUserName').innerText = savedUser;
+            document.getElementById('headerUserRole').innerText = u.role || 'Pracownik';
         }
+        loadLogs();
+    }
 
-        const data = [];
-        snap.forEach(child => { data.unshift(child.val()); }); // Odwróć kolejność
-
-        data.forEach(log => {
-            const date = new Date(log.date);
-            const dateStr = date.toLocaleString('pl-PL');
+    // ==================================================
+    // ŁADOWANIE LOGÓW
+    // ==================================================
+    function loadLogs() {
+        const container = document.getElementById('logsContainer');
+        
+        // Pobieramy ostatnie 100 logów
+        db.ref('examLogs').orderByChild('date').limitToLast(100).on('value', (snapshot) => {
             
-            let detailsHtml = '';
-            if(log.details) {
-                log.details.forEach(d => {
-                    const status = d.ok ? 'correct' : 'wrong';
-                    const uAns = d.user || 'BRAK';
-                    detailsHtml += `
-                        <div class="detail-item ${status}">
-                            <div style="flex:1; margin-right:10px;">
-                                <strong>${d.text}</strong><br>
-                                <span style="color:#888; font-size:11px;">Twoja odp: ${uAns} | Poprawna: ${d.correct}</span>
-                            </div>
-                            <div style="font-weight:700; color:${d.ok ? 'var(--success)' : 'var(--danger)'}">${d.points} pkt</div>
-                        </div>
-                    `;
-                });
+            if (!snapshot.exists()) {
+                container.innerHTML = '<div class="loading-screen">Brak wyników egzaminów.</div>';
+                updateStats(0, 0, 0);
+                return;
             }
 
-            const card = document.createElement('div');
-            card.className = 'log-card';
-            card.innerHTML = `
-                <div class="log-header ${log.passed ? 'pass' : 'fail'}">
-                    <div class="log-info">
-                        <h3>Klucz: ${log.key || 'Brak danych'}</h3>
-                        <p>${dateStr} | Status: ${log.status}</p>
-                    </div>
-                    <div>
-                        <span style="font-weight:800; font-size:18px; margin-right:15px;">${log.score}/${log.maxScore}</span>
-                        <span class="log-badge ${log.passed ? 'pass' : 'fail'}">${log.passed ? 'ZALICZONY' : 'NIEZALICZONY'}</span>
-                    </div>
-                </div>
-                <div class="log-details">
-                    <div class="details-grid">
-                        ${detailsHtml || '<div style="text-align:center; color:#888;">Brak szczegółów (przerwany egzamin).</div>'}
-                    </div>
-                </div>
-            `;
-            
-            // Toggle szczegółów
-            card.querySelector('.log-header').onclick = () => {
-                const det = card.querySelector('.log-details');
-                det.style.display = det.style.display === 'block' ? 'none' : 'block';
-            };
+            const logs = [];
+            snapshot.forEach(child => { logs.push(child.val()); });
+            logs.reverse(); // Najnowsze na górze
 
-            container.appendChild(card);
+            updateStats(logs.length, logs.filter(l => l.passed).length, logs.filter(l => !l.passed).length);
+
+            let html = '';
+            logs.forEach(log => {
+                const date = new Date(log.date);
+                const dateStr = date.toLocaleString('pl-PL');
+                
+                let statusClass = log.passed ? 'pass' : 'fail';
+                let badgeClass = log.passed ? 'badge-pass' : 'badge-fail';
+                let badgeText = log.passed ? 'ZALICZONY' : 'NIEZALICZONY';
+
+                if (log.status === 'TERMINATED') {
+                    statusClass = 'terminated';
+                    badgeClass = 'badge-term';
+                    badgeText = 'PRZERWANY';
+                }
+
+                // Generowanie tabeli szczegółów
+                let detailsHtml = '';
+                if (log.details && log.details.length > 0) {
+                    detailsHtml = `<table class="detail-table">
+                        <thead><tr><th>Pytanie</th><th>Odpowiedź</th><th>Status</th></tr></thead>
+                        <tbody>`;
+                    
+                    log.details.forEach(d => {
+                        const statusIcon = d.ok ? '<span class="status-icon correct">✔</span>' : '<span class="status-icon wrong">✖</span>';
+                        const uAns = d.user || 'BRAK';
+                        detailsHtml += `<tr>
+                            <td style="width:50%">${d.text}</td>
+                            <td>Ty: ${uAns} / Ok: ${d.correct}</td>
+                            <td>${statusIcon} ${d.points} pkt</td>
+                        </tr>`;
+                    });
+                    detailsHtml += `</tbody></table>`;
+                } else {
+                    detailsHtml = '<div style="padding:10px; color:#888; font-size:12px;">Brak szczegółów (sesja przerwana na starcie).</div>';
+                }
+
+                html += `
+                    <div class="log-card ${statusClass}">
+                        <div class="log-header" onclick="toggleDetails(this)">
+                            <div class="log-info">
+                                <h3>Klucz: ${log.key}</h3>
+                                <p>${dateStr}</p>
+                            </div>
+                            <div class="log-right">
+                                <div class="log-score">${log.score}/${log.maxScore}</div>
+                                <span class="log-badge ${badgeClass}">${badgeText}</span>
+                            </div>
+                        </div>
+                        <div class="log-details">
+                            ${detailsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
         });
-    });
+    }
+
+    function updateStats(total, pass, fail) {
+        document.getElementById('statTotal').innerText = total;
+        document.getElementById('statPass').innerText = pass;
+        document.getElementById('statFail').innerText = fail;
+    }
+
+    function toggleDetails(header) {
+        const details = header.nextElementSibling;
+        if (details.style.display === 'block') {
+            details.style.display = 'none';
+        } else {
+            details.style.display = 'block';
+        }
+    }
 </script>
 
 </body>
