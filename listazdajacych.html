@@ -1,17 +1,17 @@
-<!-- SKRYPT ZABEZPIECZAJĄCY (Wklej na górę body podstrony) -->
+<!-- SKRYPT ZABEZPIECZAJĄCY -->
 <script>
     if (!localStorage.getItem('dordUser') || !localStorage.getItem('dordPass')) {
-        window.location.href = 'index.html'; // Przekierowanie na stronę logowania
+        window.location.href = 'index.html';
     }
 </script>
-<!-- SYSTEM EGZAMINÓW - WERSJA FIREBASE -->
+<!-- SYSTEM EGZAMINÓW - WERSJA Z LOGOWANIEM -->
 <div id="dord-exams-root">
 <style>
 /* Izolacja i reset stylów */
 #dord-exams-root * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
 #dord-exams-root { max-width: 700px; margin: 0 auto; background: #fff; padding-bottom: 40px; }
 
-/* Header (Spójny z resztą) */
+/* Header */
 .dord-ex-header { background: #fff; border-bottom: 2px solid #f1c40f; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 .dord-ex-header-left { display: flex; align-items: center; gap: 15px; }
 .dord-ex-logo { width: 40px; height: 40px; object-fit: contain; }
@@ -19,6 +19,11 @@
 .dord-ex-sub { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
 .dord-back-link { font-size: 12px; color: #f1c40f; text-decoration: none; font-weight: 700; border: 1px solid #f1c40f; padding: 6px 14px; border-radius: 20px; transition: all 0.2s; background: #fff; }
 .dord-back-link:hover { background: #f1c40f; color: #000; }
+
+/* User Info Box */
+.user-info-box { background: #111; color: #fff; padding: 10px 15px; margin: 0 15px 20px 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.user-info-box span { color: #f1c40f; font-weight: 700; }
+.user-role-small { font-size: 11px; background: #333; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
 
 /* Wyszukiwarka i przyciski */
 .dord-ex-controls { display: flex; gap: 10px; margin-bottom: 20px; padding: 0 15px; }
@@ -37,7 +42,7 @@
 .dord-ex-input { width: 100%; padding: 10px 12px; border: 1.5px solid #eee; border-radius: 8px; font-size: 14px; background: #fff; outline: none; }
 .dord-ex-input:focus { border-color: #f1c40f; }
 
-/* Pille (Wybór kategorii/wyniku) */
+/* Pille */
 .dord-ex-pills { display: flex; gap: 8px; flex-wrap: wrap; }
 .dord-ex-pill { padding: 8px 14px; border: 1.5px solid #eee; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; background: #fff; color: #666; transition: all 0.15s; user-select: none; }
 .dord-ex-pill.active-yellow { border-color: #f1c40f; background: #f1c40f; color: #000; }
@@ -96,6 +101,12 @@
     <a href="index.html" class="dord-back-link">← Powrót</a>
 </div>
 
+<!-- Wyświetlanie zalogowanego użytkownika -->
+<div class="user-info-box">
+    🔐 Zalogowano jako: <span id="displayUserName">-</span>
+    <span id="displayUserRole" class="user-role-small"></span>
+</div>
+
 <!-- Wyszukiwarka -->
 <div class="dord-ex-controls">
     <input type="text" id="dord-ex-search" class="dord-ex-search" placeholder="Szukaj (imię, nazwisko, PESEL)...">
@@ -127,7 +138,7 @@
     </div>
     <div class="dord-ex-field">
         <label class="dord-ex-label">Egzaminator</label>
-        <input class="dord-ex-input" id="dord-add-examiner" placeholder="np. mgr Nowak">
+        <input class="dord-ex-input" id="dord-add-examiner" placeholder="Automatycznie" readonly style="background:#f5f5f5; color:#555;">
     </div>
     
     <div style="margin-top:10px">
@@ -158,7 +169,7 @@
         <div class="dord-ex-modal-title" id="dord-modal-title">Dodaj wynik</div>
         <div class="dord-ex-field">
             <label class="dord-ex-label">Egzaminator</label>
-            <input class="dord-ex-input" id="dord-modal-examiner">
+            <input class="dord-ex-input" id="dord-modal-examiner" readonly style="background:#f5f5f5; color:#555;">
         </div>
         <div style="margin-top:10px">
             <label class="dord-ex-label">Kategoria</label>
@@ -184,7 +195,7 @@
 <!-- Modal Usuwania -->
 <div id="dord-modal-delete" class="dord-ex-modal-bg">
     <div class="dord-ex-modal" style="max-width:320px">
-        <div class="dord-ex-modal-title" style="color:#e74c3c">Potwierdź usunięcie</div>
+        <div class="dord-ex-modal-title" style="color:#e74c3c">Potwierdź usuniętte</div>
         <p style="font-size:14px; color:#555; margin-bottom:20px">Czy na pewno chcesz usunąć tę osobę z bazy?</p>
         <div style="display:flex; gap:10px;">
             <button class="dord-ex-btn-sm" style="flex:1; background:#f0f0f0; border:none; color:#555" onclick="dordExam.closeModals()">Anuluj</button>
@@ -211,11 +222,36 @@
 
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     var db = firebase.database();
-    var ref = db.ref('exams'); // Ścieżka 'exams'
+    var ref = db.ref('exams');
     var data = [];
     var expanded = {};
     var currentId = null;
     var deleteId = null;
+
+    // --- ZMIENNE UŻYTKOWNIKA ---
+    var currentUserLogin = localStorage.getItem('dordUser') || 'Nieznany';
+    var addExaminerInput = document.getElementById('dord-add-examiner');
+    var modalExaminerInput = document.getElementById('dord-modal-examiner');
+    var displayName = document.getElementById('displayUserName');
+    var displayRole = document.getElementById('displayUserRole');
+
+    // Pobranie roli i ustawienie pól
+    if (currentUserLogin) {
+        db.ref('users/' + currentUserLogin).once('value', function(snap) {
+            var userData = snap.val();
+            if (userData) {
+                addExaminerInput.value = currentUserLogin;
+                modalExaminerInput.value = currentUserLogin; // Ustawienie domyślne w modalu
+                displayName.innerText = currentUserLogin;
+                displayRole.innerText = userData.role || 'Użytkownik';
+            } else {
+                addExaminerInput.value = currentUserLogin;
+                modalExaminerInput.value = currentUserLogin;
+                displayName.innerText = currentUserLogin;
+                displayRole.innerText = 'Admin';
+            }
+        });
+    }
 
     // Helpers
     function esc(s) { return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -232,7 +268,7 @@
                 document.getElementById('dord-add-last').value = '';
                 document.getElementById('dord-add-dob').value = '';
                 document.getElementById('dord-add-pesel').value = '';
-                document.getElementById('dord-add-examiner').value = '';
+                // Egzaminator zostaje automatycznie wypełniony
                 this.resetPills('dord-pills-cat', 'B', 'yellow');
                 this.resetPills('dord-pills-res', null, null);
             }
@@ -288,7 +324,10 @@
             currentId = id;
             var p = data.find(function(x) { return x.id === id; });
             document.getElementById('dord-modal-title').innerText = 'Nowy egzamin: ' + p.firstName + ' ' + p.lastName;
-            document.getElementById('dord-modal-examiner').value = '';
+            
+            // Reset i ustawienie egzaminatora
+            document.getElementById('dord-modal-examiner').value = currentUserLogin;
+            
             this.resetPills('dord-modal-cat', 'B', 'yellow');
             this.resetPills('dord-modal-res', null, null);
             document.getElementById('dord-modal-exam').classList.add('show');
@@ -308,11 +347,6 @@
                 examiner: document.getElementById('dord-modal-examiner').value.trim()
             };
 
-            var updates = {};
-            updates['/exams/' + currentId + '/exams/' + (p.exams ? p.exams.length : 0)] = newExam;
-            
-            // Musimy zaktualizować cały obiekt exams w Firebase, bo array push bywa problematyczny w SDK v8 bez mutate
-            // Lepiej pobrać aktualną listę, dodać i zapisać
             var currentExams = p.exams || [];
             currentExams.push(newExam);
             
