@@ -1,3 +1,9 @@
+<!-- SKRYPT SPRAWDZAJĄCY LOGOWANIE -->
+<script>
+    if (!localStorage.getItem('dordUser') || !localStorage.getItem('dordPass')) {
+        window.location.href = 'index.html'; // Przekierowanie na stronę logowania
+    }
+</script>
 <!DOCTYPE html>
 <html lang="pl">
 <head>
