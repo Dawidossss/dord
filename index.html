@@ -9,22 +9,28 @@
         #dord-root-panel * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         #dord-root-panel { max-width: 800px; margin: 0 auto; background: #fff; padding-bottom: 50px; position: relative; min-height: 100vh; }
 
+        /* Header */
         .dord-main-header { background: linear-gradient(135deg, #111 0%, #333 100%); color: #fff; padding: 40px 20px; text-align: center; border-radius: 0 0 20px 20px; margin-bottom: 30px; }
         .dord-main-logo { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 15px; border: 3px solid #f1c40f; }
         .dord-main-title { font-size: 24px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
         .dord-main-subtitle { font-size: 12px; color: #aaa; margin-top: 5px; text-transform: uppercase; }
+        .user-role-badge { background: #f1c40f; color: #000; padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 700; margin-left: 5px; }
 
+        /* Grid 2x2 */
         .dord-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
         @media (max-width: 500px) { .dord-grid { grid-template-columns: 1fr; } }
 
+        /* Karty Menu */
         .dord-menu-card { background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 25px 20px; text-align: center; text-decoration: none; color: #111; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s; display: block; border-bottom: 4px solid transparent; }
         .dord-menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-bottom-color: #f1c40f; }
         .dord-menu-icon { font-size: 36px; margin-bottom: 12px; display: block; }
         .dord-menu-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 5px; }
         .dord-menu-desc { font-size: 11px; color: #888; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
 
+        /* Stopka */
         .dord-footer { text-align: center; margin-top: 40px; color: #ccc; font-size: 11px; padding: 0 20px; }
 
+        /* --- SYSTEM LOGOWANIA --- */
         #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
         .login-box { background: #fff; padding: 30px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .login-box h2 { margin-top: 0; margin-bottom: 20px; }
@@ -37,7 +43,33 @@
         .btn-logout { background: transparent; border: 1px solid #f1c40f; color: #f1c40f; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; }
         .btn-admin { background: #e74c3c; color: white; border: none; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; margin-right: 10px; display: none; }
 
-        #changePassModal, #adminModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; }
+        /* --- PANEL ZARZĄDZANIA --- */
+        #managementModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: flex-start; padding-top: 30px; overflow-y: auto; }
+        .mgmt-container { background: #fff; width: 90%; max-width: 600px; border-radius: 15px; padding: 20px; margin-bottom: 30px; }
+        .mgmt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .mgmt-title { font-size: 18px; font-weight: 700; }
+        
+        .user-card-mgmt { background: #f9f9f9; border: 1px solid #eee; border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .user-card-mgmt-header { display: flex; justify-content: space-between; align-items: center; }
+        .user-login-label { font-weight: 700; font-size: 16px; }
+        .user-role-label { font-size: 12px; color: #555; }
+        
+        .mgmt-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .mgmt-row label { font-size: 12px; font-weight: 600; width: 100%; }
+        .mgmt-row select, .mgmt-row input { padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
+        .mgmt-row input[type="checkbox"] { width: auto; transform: scale(1.2); }
+        .checkbox-group { display: flex; gap: 10px; align-items: center; }
+        
+        .btn-mgmt { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: none; }
+        .btn-mgmt-save { background: #27ae60; color: white; }
+        .btn-mgmt-del { background: #e74c3c; color: white; }
+        .btn-mgmt-cancel { background: #eee; color: #333; }
+
+        /* Modal Dodawania (zaktualizowany) */
+        #adminModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 10001; justify-content: center; align-items: center; }
+        .add-user-form { text-align: left; }
+        .add-user-form .form-group { margin-bottom: 10px; }
+        .add-user-form label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 3px; }
     </style>
 </head>
 <body>
@@ -67,15 +99,56 @@
         </div>
     </div>
 
-    <!-- MODAL ADMINISTRATORA -->
+    <!-- MODAL DODAWANIA UŻYTKOWNIKA -->
     <div id="adminModal">
-        <div class="login-box" style="width: 350px;">
-            <h2>👑 Panel Admina</h2>
-            <input type="text" id="newUserLogin" placeholder="Login nowego użytkownika">
-            <input type="password" id="newUserPass" placeholder="Tymczasowe hasło">
-            <button onclick="createUser()">Utwórz konto</button>
-            <button onclick="document.getElementById('adminModal').style.display='none'" style="background: #ccc; margin-top:5px; color: #333;">Zamknij</button>
-            <div id="adminMsg" class="login-error" style="margin-top:10px;"></div>
+        <div class="login-box" style="width: 380px; text-align: left;">
+            <h2 style="text-align: center;">👑 Nowy Pracownik</h2>
+            <div class="add-user-form">
+                <div class="form-group">
+                    <label>Login</label>
+                    <input type="text" id="newUserLogin" class="dord-input" placeholder="np. jan.kowalski">
+                </div>
+                <div class="form-group">
+                    <label>Hasło startowe</label>
+                    <input type="password" id="newUserPass" class="dord-input" placeholder="Tymczasowe hasło">
+                </div>
+                <div class="form-group">
+                    <label>Stanowisko</label>
+                    <select id="newUserRole" class="dord-input">
+                        <option value="Młodszy Egzaminator">Młodszy Egzaminator</option>
+                        <option value="Egzaminator">Egzaminator</option>
+                        <option value="Starszy Egzaminator">Starszy Egzaminator</option>
+                        <option value="Zastępca Kierownika">Zastępca Kierownika</option>
+                        <option value="Kierownik">Kierownik</option>
+                        <option value="Zastępca Dyrektora">Zastępca Dyrektora</option>
+                        <option value="Dyrektor Ośrodka">Dyrektor Ośrodka</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Zezwolenia</label>
+                    <div class="checkbox-group">
+                        <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_t"> Teoria</label>
+                        <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_p"> Praktyka</label>
+                        <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_k"> Kursy</label>
+                    </div>
+                </div>
+            </div>
+            <div class="dord-actions-row" style="margin-top:15px;">
+                <button class="dord-btn dord-btn-sec" onclick="document.getElementById('adminModal').style.display='none'" style="flex:1">Anuluj</button>
+                <button class="dord-btn dord-btn-main" onclick="createUser()" style="flex:1">Utwórz</button>
+            </div>
+            <div id="adminMsg" class="login-error" style="margin-top:10px; text-align: center;"></div>
+        </div>
+    </div>
+
+    <!-- MODAL ZARZĄDZANIA UŻYTKOWNIKAMI -->
+    <div id="managementModal">
+        <div class="mgmt-container">
+            <div class="mgmt-header">
+                <div class="mgmt-title">👥 Zarządzanie Pracownikami</div>
+                <button class="btn-mgmt btn-mgmt-cancel" onclick="document.getElementById('managementModal').style.display='none'">Zamknij</button>
+            </div>
+            <div id="userListContainer">Ładowanie...</div>
         </div>
     </div>
 
@@ -85,10 +158,14 @@
         <div class="dord-main-header">
             <img src="https://z-cdn-media.chatglm.cn/files/e765f68e-656e-42c9-a93f-c50b8530c618.png?auth_key=1874049393-a1d73f3391ef423084224503a91822aa-0-807a3d0214e239d7f33ff6e69e8664f3" class="dord-main-logo">
             <h1 class="dord-main-title">Panel Pracownika DORD</h1>
-            <div class="dord-main-subtitle">Zalogowano jako: <span id="welcomeUser">-</span></div>
+            <div class="dord-main-subtitle">
+                Zalogowano jako: <span id="welcomeUser">-</span>
+                <span id="userRoleBadge" class="user-role-badge"></span>
+            </div>
             
             <div class="header-actions">
-                <button id="btnAdminPanel" class="btn-admin" onclick="document.getElementById('adminModal').style.display='flex'">Dodaj użytkownika</button>
+                <button id="btnAdminPanel" class="btn-admin" onclick="openAddModal()">＋ Dodaj konto</button>
+                <button id="btnMgmtPanel" class="btn-admin" onclick="openManagement()" style="background: #3498db;">👥 Zarządzaj</button>
                 <button class="btn-logout" onclick="logout()">Wyloguj</button>
             </div>
         </div>
@@ -126,7 +203,7 @@
         </div>
 
         <div class="dord-footer">
-            System DORD v2.0 Secured<br>
+            System DORD v3.0 Hierarchy<br>
             Zintegrowana baza danych DORD
         </div>
     </div>
@@ -137,7 +214,7 @@
 
 <script>
     // ==================================================
-    // KONFIGURACJA TWOJEJ BAZY (WPISANA AUTOMATYCZNIE)
+    // KONFIGURACJA
     // ==================================================
     const firebaseConfig = {
         apiKey: "AIzaSyC-Qxs9Zd0x1_1tpsiAQJE9QYkdPIARPXU",
@@ -150,13 +227,18 @@
         measurementId: "G-26TGJXYS6X"
     };
     
-    // Inicjalizacja Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Stale stanowisk
+    const ROLES = [
+        "Młodszy Egzaminator", "Egzaminator", "Starszy Egzaminator", 
+        "Zastępca Kierownika", "Kierownik", 
+        "Zastępca Dyrektora", "Dyrektor Ośrodka"
+    ];
+
     let currentUser = null;
 
-    // Sprawdzenie przy starcie
     window.onload = function() {
         const savedUser = localStorage.getItem('dordUser');
         const savedPass = localStorage.getItem('dordPass');
@@ -170,8 +252,7 @@
 
     function attemptLogin() {
         const user = document.getElementById('loginUsername').value.trim();
-        const pass = document.getElementById('loginPassword').value.trim(); // Dodałem trim, żeby usunąć spacje
-        
+        const pass = document.getElementById('loginPassword').value.trim();
         if(!user || !pass) {
              document.getElementById('loginError').innerText = "Uzupełnij pola.";
              return;
@@ -180,41 +261,35 @@
     }
 
     function verifyLogin(username, password, isAutoLogin) {
-        // Odczyt z bazy
         db.ref('users/' + username).once('value', (snapshot) => {
             const data = snapshot.val();
             
-            // Dodatkowe logowanie do konsoli (dla testów, czy baza odpowiada)
-            console.log("Odpowiedź z bazy dla użytkownika " + username + ":", data);
-
             if (data && data.password === password) {
-                // LOGOWANIE UDANE
-                currentUser = { username: username, role: data.role };
+                // Logowanie udane
+                // Zapisz pełne dane do obiektu
+                currentUser = { 
+                    username: username, 
+                    role: data.role || 'user', 
+                    permissions: data.permissions || {} 
+                };
+                
                 localStorage.setItem('dordUser', username);
                 localStorage.setItem('dordPass', password);
 
                 if (data.forceChange === true) {
-                    // Pierwsze logowanie - zmiana hasła
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('changePassModal').style.display = 'flex';
                 } else {
-                    // Normalne wejście
                     enterSystem();
                 }
             } else {
-                // LOGOWANIE NIEUDANE
                 if (!isAutoLogin) {
                     document.getElementById('loginError').innerText = "Błędny login lub hasło.";
                 }
-                // Czyścimy złe dane z pamięci
                 localStorage.removeItem('dordUser');
                 localStorage.removeItem('dordPass');
                 document.getElementById('login-overlay').style.display = 'flex';
             }
-        }, (error) => {
-            // Błąd połączenia z bazą
-            console.error("Błąd bazy danych:", error);
-            document.getElementById('loginError').innerText = "Błąd połączenia z bazą.";
         });
     }
 
@@ -222,11 +297,24 @@
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('changePassModal').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
+        
+        // Wyświetl dane użytkownika
         document.getElementById('welcomeUser').innerText = currentUser.username;
+        document.getElementById('userRoleBadge').innerText = currentUser.role;
 
-        // Jeśli admin, pokaż przycisk dodawania użytkowników
-        if (currentUser.role === 'admin') {
+        // Zarządzanie widocznością przycisków
+        const isAdmin = (currentUser.username === 'admin'); // Admin to konkretny login
+        const isDirector = (currentUser.role === 'Dyrektor Ośrodka');
+        const isDeputyDirector = (currentUser.role === 'Zastępca Dyrektora'); // Opcjonalnie też daj uprawnienia
+
+        // Przycisk "Dodaj konto" - tylko Admin
+        if (isAdmin) {
             document.getElementById('btnAdminPanel').style.display = 'inline-block';
+        }
+
+        // Przycisk "Zarządzaj" - Admin lub Dyrektor
+        if (isAdmin || isDirector) {
+            document.getElementById('btnMgmtPanel').style.display = 'inline-block';
         }
     }
 
@@ -252,22 +340,135 @@
         location.reload();
     }
 
+    // ==================================================
+    // FUNKCJE ADMINISTRACYJNE
+    // ==================================================
+
+    function openAddModal() {
+        document.getElementById('newUserLogin').value = '';
+        document.getElementById('newUserPass').value = 'start123'; // Domyślne hasło
+        document.getElementById('adminModal').style.display = 'flex';
+    }
+
+    // Tworzenie użytkownika
     function createUser() {
-        if (currentUser.role !== 'admin') return;
-        const newLogin = document.getElementById('newUserLogin').value.trim();
-        const newPass = document.getElementById('newUserPass').value.trim();
+        const login = document.getElementById('newUserLogin').value.trim();
+        const pass = document.getElementById('newUserPass').value.trim();
+        const role = document.getElementById('newUserRole').value;
+        
+        // Uprawnienia
+        const perms = {
+            teoretyczny: document.getElementById('perm_t').checked,
+            praktyczny: document.getElementById('perm_p').checked,
+            kursy: document.getElementById('perm_k').checked
+        };
 
-        if (!newLogin || !newPass) { document.getElementById('adminMsg').innerText = "Uzupełnij pola."; return; }
+        if (!login || !pass) { document.getElementById('adminMsg').innerText = "Uzupełnij login i hasło."; return; }
 
-        db.ref('users/' + newLogin).set({
-            password: newPass,
-            role: 'user',
+        db.ref('users/' + login).set({
+            password: pass,
+            role: role,
+            permissions: perms,
             forceChange: true
         }).then(() => {
-            document.getElementById('adminMsg').innerText = "✅ Utworzono: " + newLogin;
+            document.getElementById('adminMsg').innerText = "✅ Utworzono: " + login;
             document.getElementById('newUserLogin').value = '';
-            document.getElementById('newUserPass').value = '';
+        }).catch(e => document.getElementById('adminMsg').innerText = "Błąd: "+e.message);
+    }
+
+    // ==================================================
+    // PANEL ZARZĄDZANIA (LISTA UŻYTKOWNIKÓW)
+    // ==================================================
+
+    function openManagement() {
+        document.getElementById('managementModal').style.display = 'flex';
+        loadUsersForManagement();
+    }
+
+    function loadUsersForManagement() {
+        const container = document.getElementById('userListContainer');
+        container.innerHTML = 'Ładowanie...';
+
+        db.ref('users').once('value', (snap) => {
+            const users = snap.val();
+            let html = '';
+
+            if (!users) {
+                container.innerHTML = 'Brak użytkowników.';
+                return;
+            }
+
+            for (let login in users) {
+                const u = users[login];
+                const perms = u.permissions || {};
+                
+                // Sprawdź czy to admin (siebie nie można usunąć przez panel)
+                const isSelf = (login === currentUser.username);
+                const isSuperAdmin = (login === 'admin');
+
+                html += `
+                    <div class="user-card-mgmt">
+                        <div class="user-card-mgmt-header">
+                            <div>
+                                <span class="user-login-label">${login}</span>
+                                ${isSuperAdmin ? '<span style="color:red; font-size:10px; margin-left:5px;">(SUPER ADMIN)</span>' : ''}
+                            </div>
+                            <span class="user-role-label">${u.role}</span>
+                        </div>
+                        
+                        <!-- Formularz edycji -->
+                        <div class="mgmt-row">
+                            <label>Stanowisko:</label>
+                            <select id="role-${login}" ${isSuperAdmin ? 'disabled' : ''}>
+                                ${ROLES.map(r => `<option value="${r}" ${u.role===r?'selected':''}>${r}</option>`).join('')}
+                            </select>
+                        </div>
+
+                        <div class="mgmt-row">
+                            <label>Zezwolenia:</label>
+                            <div class="checkbox-group">
+                                <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_t_${login}" ${perms.teoretyczny?'checked':''}> Teoria</label>
+                                <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_p_${login}" ${perms.praktyczny?'checked':''}> Praktyka</label>
+                                <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_k_${login}" ${perms.kursy?'checked':''}> Kursy</label>
+                            </div>
+                        </div>
+
+                        <div class="mgmt-row" style="justify-content: flex-end; margin-top:5px;">
+                            <button class="btn-mgmt btn-mgmt-save" onclick="saveUserChanges('${login}')">Zapisz zmiany</button>
+                            ${!isSuperAdmin && !isSelf && currentUser.username === 'admin' ? `<button class="btn-mgmt btn-mgmt-del" onclick="deleteUser('${login}')">Usuń konto</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
         });
+    }
+
+    function saveUserChanges(login) {
+        const newRole = document.getElementById('role-' + login).value;
+        const newPerms = {
+            teoretyczny: document.getElementById('perm_t_' + login).checked,
+            praktyczny: document.getElementById('perm_p_' + login).checked,
+            kursy: document.getElementById('perm_k_' + login).checked
+        };
+
+        db.ref('users/' + login).update({
+            role: newRole,
+            permissions: newPerms
+        }).then(() => {
+            alert('Zaktualizowano użytkownika ' + login);
+            // Odśwież listę
+            loadUsersForManagement();
+        }).catch(e => alert('Błąd: ' + e.message));
+    }
+
+    function deleteUser(login) {
+        if (confirm('Czy na pewno chcesz usunąć konto ' + login + '? To operacja nieodwracalna.')) {
+            db.ref('users/' + login).remove().then(() => {
+                alert('Usunięto konto.');
+                loadUsersForManagement();
+            });
+        }
     }
 </script>
 </body>
