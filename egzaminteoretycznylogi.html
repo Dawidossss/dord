@@ -3,298 +3,516 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historia Egzaminów - DORD</title>
+    <title>Egzamin DORD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; padding: 0; background: #f4f4f4; font-family: 'Segoe UI', system-ui, sans-serif; color: #111; }
-        
-        /* --- PASEK LOGOWANIA (IDENTYCZNY JAK W INNYCH MODUŁACH) --- */
-        .top-bar {
-            background: #111; color: #fff; 
-            padding: 0 20px; height: 50px;
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            font-size: 13px;
+        :root {
+            --bg: #f4f4f4; --card: #ffffff; --text: #111111; --muted: #6c757d;
+            --primary: #f1c40f; --accent: #111111; --danger: #e74c3c; --success: #2ecc71;
+            --radius: 12px; --shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        .tb-left { display: flex; align-items: center; gap: 10px; }
-        .tb-icon { font-size: 16px; opacity: 0.8; }
-        .tb-user { opacity: 0.9; }
-        .tb-user strong { color: #fff; font-weight: 600; }
-        
-        .tb-right { display: flex; align-items: center; gap: 15px; }
-        .role-badge { background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-logout-top { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; transition: 0.2s; }
-        .btn-logout-top:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); height: 100vh; width: 100vw; overflow: hidden; }
 
-        /* Kontener główny */
-        .app-container { max-width: 800px; margin: 0 auto; background: #fff; min-height: calc(100vh - 50px); box-shadow: 0 0 20px rgba(0,0,0,0.05); padding-bottom: 50px; }
-        
-        /* HEADER Wewnętrzny */
-        .page-header { padding: 25px 20px 15px 20px; border-bottom: 1px solid #eee; background: #fff; }
-        .page-title { font-size: 20px; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 10px; }
-        .page-subtitle { font-size: 12px; color: #888; margin-top: 5px; }
+        /* --- LOGOWANIE --- */
+        #loginScreen { height: 100%; width: 100%; display: flex; justify-content: center; align-items: center; padding: 20px; background: #fff; }
+        .login-box { width: 100%; max-width: 400px; padding: 40px; background: var(--bg); border-radius: 20px; text-align: center; }
+        .logo-img { width: 60px; margin-bottom: 15px; }
+        .title { font-size: 22px; font-weight: 800; margin-bottom: 5px; }
+        .subtitle { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 30px; font-weight: 700; }
+        .input-field { width: 100%; padding: 18px; border: 2px solid #ddd; border-radius: 12px; font-size: 18px; font-weight: 700; text-align: center; letter-spacing: 2px; margin-bottom: 15px; background: #fff; outline: none; }
+        .input-field:focus { border-color: var(--primary); }
+        .btn-main { width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-main:hover { background: #000; transform: translateY(-1px); }
+        .error-text { color: var(--danger); font-size: 13px; margin-top: 15px; font-weight: 600; }
+        .spinner { display: none; width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; margin: 10px auto; }
 
-        /* TREŚĆ */
-        .page-content { padding: 20px; }
-        
-        /* Statystyki */
-        .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
-        .stat-box { background: #fff; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .stat-val { font-size: 28px; font-weight: 800; color: #111; }
-        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; margin-top: 5px; font-weight: 600; }
-        .stat-box.green .stat-val { color: #27ae60; }
-        .stat-box.red .stat-val { color: #e74c3c; }
+        /* --- EGZAMIN --- */
+        #examScreen { display: none; height: 100%; width: 100%; flex-direction: column; background: var(--bg); }
+        .exam-nav { background: #fff; padding: 15px 30px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .nav-left { font-weight: 700; font-size: 14px; color: var(--muted); }
+        .nav-left span { color: var(--text); font-size: 18px; margin-right: 5px; }
+        .nav-right { font-weight: 700; font-size: 14px; color: var(--text); text-transform: uppercase; background: #eee; padding: 5px 12px; border-radius: 20px; }
+        .timer-wrap { background: #fff; padding: 0 30px; display: flex; align-items: center; height: 10px; margin-top: 5px; }
+        .timer-bar-bg { width: 100%; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
+        .timer-bar-fg { height: 100%; background: var(--primary); transition: width 0.1s linear; }
+        .q-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; max-width: 1000px; margin: 0 auto; width: 100%; }
+        .q-header { text-align: center; margin-bottom: 30px; width: 100%; }
+        .big-num { font-size: 100px; font-weight: 900; color: #eee; line-height: 1; position: absolute; z-index: 0; opacity: 0.5; pointer-events: none; }
+        .points-badge { display: inline-block; background: #fff; padding: 6px 15px; border-radius: 20px; font-size: 13px; font-weight: 700; color: #555; border: 2px solid #eee; position: relative; z-index: 1; }
+        .points-badge.p3 { border-color: var(--danger); color: var(--danger); background: #fff0f0; }
+        .points-badge.p2 { border-color: #f1c40f; color: #d3a100; background: #fffdf0; }
+        .points-badge.p1 { border-color: var(--success); color: var(--success); background: #f0fff4; }
+        .q-text-box { background: #fff; padding: 40px; border-radius: 16px; width: 100%; box-shadow: var(--shadow); position: relative; z-index: 1; margin-bottom: 40px; }
+        .q-text { font-size: 26px; font-weight: 600; text-align: center; line-height: 1.5; }
+        .answers-grid { display: grid; gap: 15px; width: 100%; }
+        .answers-grid.tf { grid-template-columns: 1fr 1fr; gap: 20px; }
+        .answers-grid.abc { grid-template-columns: 1fr; gap: 15px; }
+        .ans-btn { background: #fff; border: 3px solid #eee; padding: 25px; border-radius: 12px; font-size: 20px; font-weight: 700; cursor: pointer; transition: all 0.15s; text-align: center; color: var(--text); position: relative; overflow: hidden; z-index: 1; }
+        .ans-btn:hover { border-color: var(--accent); background: var(--accent); color: #fff; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
-        /* Log List */
-        .log-list { display: flex; flex-direction: column; gap: 10px; }
-        
-        .log-card { background: #fff; border: 1px solid #eee; border-radius: 10px; overflow: hidden; transition: 0.2s; }
-        .log-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        
-        .log-header { 
-            padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; 
-            user-select: none;
-        }
-        .log-info h3 { margin: 0 0 5px 0; font-size: 15px; font-weight: 700; }
-        .log-info p { margin: 0; font-size: 11px; color: #888; }
-        
-        .log-right { display: flex; align-items: center; gap: 15px; }
-        .log-score { font-size: 18px; font-weight: 800; }
-        
-        .log-badge { padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #fff; }
-        .badge-pass { background: #27ae60; }
-        .badge-fail { background: #e74c3c; }
-        .badge-term { background: #f39c12; color: #000; }
-
-        /* Szczegóły */
-        .log-details { display: none; background: #f9f9f9; border-top: 1px solid #eee; padding: 15px; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .detail-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .detail-table th { text-align: left; color: #555; font-weight: 600; padding: 8px; border-bottom: 1px solid #ddd; background: #fff; }
-        .detail-table td { padding: 8px; border-bottom: 1px solid #eee; background: #fff; }
-        .detail-table tr:last-child td { border-bottom: none; }
-        
-        .status-icon { font-weight: bold; margin-right: 5px; }
-        .correct { color: #27ae60; }
-        .wrong { color: #e74c3c; }
-
-        /* Loading & Empty & Error */
-        .status-screen { text-align: center; padding: 50px 20px; color: #888; }
-        .status-screen.error { color: #e74c3c; background: #fff0f0; border-radius: 10px; padding: 20px; border: 1px solid #e74c3c; margin-top: 20px;}
-        .loading-spinner { width: 30px; height: 30px; border: 3px solid #eee; border-top-color: #f1c40f; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        /* --- WYNIKI --- */
+        #resultScreen, #failScreen { display: none; height: 100%; width: 100%; overflow-y: auto; background: var(--bg); }
+        .result-container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .result-header { text-align: center; margin-bottom: 40px; }
+        .result-circle-lg { width: 150px; height: 150px; border-radius: 50%; margin: 0 auto 20px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 800; }
+        .result-circle-lg.pass { background: var(--success); color: #fff; box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3); }
+        .result-circle-lg.fail { background: var(--danger); color: #fff; box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3); }
+        .r-val-lg { font-size: 42px; line-height: 1; }
+        .r-lbl-lg { font-size: 12px; text-transform: uppercase; opacity: 0.9; }
+        .history-list-full { display: flex; flex-direction: column; gap: 15px; }
+        .history-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .h-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .h-qid { font-size: 14px; font-weight: 800; color: var(--muted); }
+        .h-status-badge-lg { padding: 6px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .h-status-badge-lg.ok { background: #e8f5e9; color: var(--success); }
+        .h-status-badge-lg.bad { background: #ffebee; color: var(--danger); }
+        .h-content-text { font-size: 16px; font-weight: 600; line-height: 1.5; color: var(--text); margin-bottom: 10px; }
+        .h-ans-text { font-size: 14px; color: var(--muted); }
+        .h-ans-text strong { color: var(--text); }
+        .fail-container { height: 100%; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        .fail-icon { font-size: 60px; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 768px) { .q-text { font-size: 20px; } .ans-btn { font-size: 18px; padding: 20px; } .answers-grid.tf { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<!-- PASEK LOGOWANIA (TOP BAR) -->
-<div class="top-bar">
-    <div class="tb-left">
-        <span class="tb-icon">🔒</span>
-        <span class="tb-user">Zalogowano jako: <strong id="tbName">-</strong></span>
-    </div>
-    <div class="tb-right">
-        <span id="tbRole" class="role-badge">-</span>
-        <button class="btn-logout-top" onclick="logout()">Wyloguj</button>
-    </div>
-</div>
-
-<div class="app-container">
-    <!-- HEADER STRONY -->
-    <div class="page-header">
-        <h1 class="page-title">📊 Historia Egzaminów</h1>
-        <div class="page-subtitle">Lista ostatnich sesji egzaminacyjnych w systemie.</div>
+    <!-- LOGOWANIE -->
+    <div id="loginScreen">
+        <div class="login-box">
+            <img src="https://z-cdn-media.chatglm.cn/files/b08df4b5-419e-4896-bd87-bea2a0ed5b07.png?auth_key=1874273734-7660da9223ef487f9e4ebdb6b87873f5-0-5e45fc9e0f294cc363ba5c4d5ddc2300" class="logo-img">
+            <div class="title">DORD System</div>
+            <div class="subtitle">Weryfikacja dostępu</div>
+            <input type="text" id="keyInput" class="input-field" placeholder="XXXX-XXXX" maxlength="9" autocomplete="off">
+            <button id="loginBtn" class="btn-main" onclick="validateKey()">Rozpocznij</button>
+            <div id="loginSpinner" class="spinner"></div>
+            <div id="loginError" class="error-text"></div>
+        </div>
     </div>
 
-    <!-- TREŚĆ -->
-    <div class="page-content">
+    <!-- EGZAMIN -->
+    <div id="examScreen">
+        <div class="exam-nav">
+            <div class="nav-left"><span id="qNum">1</span> / <span id="qTotal">32</span></div>
+            <div class="nav-right" id="qCat">Kategoria</div>
+        </div>
+        <div class="timer-wrap"><div class="timer-bar-bg"><div id="tBar" class="timer-bar-fg"></div></div></div>
 
-        <!-- Statystyki -->
-        <div class="stats-bar">
-            <div class="stat-box">
-                <div class="stat-val" id="statTotal">0</div>
-                <div class="stat-label">Wszystkich</div>
+        <div class="q-container">
+            <div class="q-header">
+                <div class="big-num" id="qNumBg">1</div>
+                <div id="qPts" class="points-badge p3" style="margin-top: 20px;">3 pkt</div>
             </div>
-            <div class="stat-box green">
-                <div class="stat-val" id="statPass">0</div>
-                <div class="stat-label">Zaliczonych</div>
+            <div class="q-text-box"><div id="qText" class="q-text">Treść pytania...</div></div>
+            <div id="ansGrid" class="answers-grid tf"></div>
+        </div>
+    </div>
+
+    <!-- WYNIKI -->
+    <div id="resultScreen">
+        <div class="result-container">
+            <div class="result-header">
+                <div id="resCircle" class="result-circle-lg pass">
+                    <span id="resScoreVal" class="r-val-lg">0</span>
+                    <span class="r-lbl-lg">Punktów</span>
+                </div>
+                <h2 id="resTitle" style="font-size: 24px; font-weight: 800;">WYNIK POZYTYWNY</h2>
+                <p id="resDesc" style="font-size: 16px; color: var(--muted); margin-top: 10px;">Gratulacje!</p>
             </div>
-            <div class="stat-box red">
-                <div class="stat-val" id="statFail">0</div>
-                <div class="stat-label">Niezaliczonych</div>
+            <div id="historyList" class="history-list-full"></div>
+        </div>
+    </div>
+
+    <!-- BŁĄD -->
+    <div id="failScreen">
+        <div class="fail-container">
+            <div>
+                <div class="fail-icon">⚠️</div>
+                <h2 style="color: var(--danger); margin-bottom: 10px; font-size: 24px;">EGZAMIN UNIEWAŻNIONY</h2>
+                <p style="color: var(--muted); font-size: 16px;">Wykryto opuszczenie okna egzaminu.<br>Procedura została przerwana.</p>
             </div>
         </div>
-
-        <!-- Lista logów -->
-        <div id="logsContainer" class="log-list">
-            <div class="status-screen">
-                <div class="loading-spinner"></div>
-                <div>Ładowanie danych...</div>
-            </div>
-        </div>
-
     </div>
-</div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-<script>
-    // ==================================================
-    // KONFIGURACJA I SESJA
-    // ==================================================
-    const firebaseConfig = {
-        apiKey: "AIzaSyC-Qxs9Zd0x1_1tpsiAQJE9QYkdPIARPXU",
-        authDomain: "dord---ewidencja-kursow.firebaseapp.com",
-        databaseURL: "https://dord---ewidencja-kursow-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "dord---ewidencja-kursow",
-        storageBucket: "dord---ewidencja-kursow.firebasestorage.app",
-        messagingSenderId: "652495067977",
-        appId: "1:652495067977:web:61868205fa85f02d905898"
-    };
-    
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // --- BAZA PYTAŃ (SKRÓCONA WIDOK, ALE PEŁNA W KODZIE) ---
+        const questionsData = [
+            // TAK/NIE 3 pkt
+            { text: "Czy masz obowiązek ustąpić pierwszeństwa pojazdowi uprzywilejowanemu na sygnale?", answer: "TAK", points: 3, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy wolno wyprzedzać na skrzyżowaniu równorzędnym?", answer: "NIE", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy kierowca odpowiada za bezpieczeństwo pasażerów?", answer: "TAK", points: 3, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy możesz przejechać na żółtym świetle, jeśli możesz się zatrzymać bezpiecznie?", answer: "NIE", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy wolno omijać pojazd, który zatrzymał się przed przejściem, aby ustąpić pieszym?", answer: "NIE", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy masz obowiązek zachować odstęp od rowerzysty min. 1 m?", answer: "TAK", points: 3, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy wolno jechać pasem awaryjnym bez powodu?", answer: "NIE", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy możesz używać świateł przeciwmgielnych tylnych przy dobrej widoczności?", answer: "NIE", points: 3, type: "tf", category: "Technika" },
+            { text: "Czy wolno zawracać na drodze ekspresowej?", answer: "NIE", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy kierowca musi upewnić się przed otwarciem drzwi pojazdu?", answer: "TAK", points: 3, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy zbliżając się do przejścia dla pieszych masz obowiązek zachować szczególną ostrożność?", answer: "TAK", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy wolno wyprzedzać na przejściu dla pieszych bez sygnalizacji?", answer: "NIE", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy kierowca musi ustąpić pierwszeństwa pieszemu wchodzącemu na przejście?", answer: "TAK", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy można przekroczyć prędkość, aby zakończyć wyprzedzanie szybciej?", answer: "NIE", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy znak STOP oznacza bezwzględny obowiązek zatrzymania?", answer: "TAK", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy można używać telefonu podczas jazdy bez zestawu głośnomówiącego?", answer: "NIE", points: 3, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy kierowca musi zapinać pasy bezpieczeństwa?", answer: "TAK", points: 3, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy wolno wjechać na skrzyżowanie, jeśli nie ma miejsca do jego opuszczenia?", answer: "NIE", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy na autostradzie można zawracać?", answer: "NIE", points: 3, type: "tf", category: "Przepisy" },
+            { text: "Czy trzeba włączyć światła mijania w dzień?", answer: "TAK", points: 3, type: "tf", category: "Technika" },
+            // TAK/NIE 2 pkt
+            { text: "Czy wolno wyprzedzać pojazd wolnobieżny?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy można parkować na chodniku, jeśli znak tego nie zabrania?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy można używać klaksonu w celu ostrzeżenia o niebezpieczeństwie?", answer: "TAK", points: 2, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy dopuszczalne jest cofanie na skrzyżowaniu?", answer: "NIE", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy można zatrzymać się przed przejściem dla pieszych?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy kierowca musi mieć włączone światła podczas deszczu?", answer: "TAK", points: 2, type: "tf", category: "Technika" },
+            { text: "Czy można wyprzedzać z prawej strony na drodze wielopasmowej?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy pieszy ma pierwszeństwo na przejściu?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy można zawracać na skrzyżowaniu z sygnalizacją świetlną?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy znak ograniczenia prędkości obowiązuje tylko w dzień?", answer: "NIE", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy można parkować 10 m od przejścia dla pieszych?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy wolno używać świateł drogowych w mieście?", answer: "TAK", points: 2, type: "tf", category: "Technika" },
+            { text: "Czy rowerzysta ma pierwszeństwo na przejeździe rowerowym?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy można zatrzymać się na chodniku, jeśli zostawisz miejsce dla pieszych?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy kierunkowskaz zwalnia z obowiązku upewnienia się o bezpieczeństwie manewru?", answer: "NIE", points: 2, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy można wyprzedzać z prawej strony na autostradzie?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy pieszy może wejść bezpośrednio pod nadjeżdżający pojazd?", answer: "NIE", points: 2, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy dopuszczalne jest cofanie na drodze jednokierunkowej?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy można używać klaksonu w obszarze zabudowanym bez powodu?", answer: "NIE", points: 2, type: "tf", category: "Przepisy" },
+            { text: "Czy znak ograniczenia prędkości obowiązuje do najbliższego skrzyżowania?", answer: "TAK", points: 2, type: "tf", category: "Przepisy" },
+            // TAK/NIE 1 pkt
+            { text: "Czy można przewozić psa bez zabezpieczenia?", answer: "NIE", points: 1, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy dopuszczalne jest krótkie zatrzymanie na drodze dla rowerów?", answer: "NIE", points: 1, type: "tf", category: "Przepisy" },
+            { text: "Czy można jechać bez włączonych świateł w nocy?", answer: "NIE", points: 1, type: "tf", category: "Technika" },
+            { text: "Czy można parkować w odległości mniejszej niż 10 m od skrzyżowania?", answer: "NIE", points: 1, type: "tf", category: "Przepisy" },
+            { text: "Czy można zatrzymać się na moście?", answer: "NIE", points: 1, type: "tf", category: "Przepisy" },
+            { text: "Czy dopuszczalne jest krótkotrwałe zatrzymanie na przystanku autobusowym?", answer: "NIE", points: 1, type: "tf", category: "Przepisy" },
+            { text: "Czy można przewozić dziecko bez fotelika?", answer: "NIE", points: 1, type: "tf", category: "Bezpieczeństwo" },
+            { text: "Czy dopuszczalne jest jazda bez dokumentów w formie fizycznej?", answer: "TAK", points: 1, type: "tf", category: "Przepisy" },
+            { text: "Czy światła przeciwmgielne można używać przy dobrej widoczności?", answer: "NIE", points: 1, type: "tf", category: "Technika" },
+            { text: "Czy można parkować na zakręcie?", answer: "NIE", points: 1, type: "tf", category: "Przepisy" },
 
-    // Sprawdzenie sesji
-    const savedUser = localStorage.getItem('dordUser');
-    const savedPass = localStorage.getItem('dordPass');
+            // ABC 3 pkt
+            { text: "Zbliżasz się do skrzyżowania równorzędnego. Co robisz?", A: "Przyspieszasz", B: "Ustępujesz pojazdowi z prawej", C: "Jedziesz pierwszy", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Chcesz skręcić w lewo na skrzyżowaniu. Komu ustępujesz?", A: "Nikomu", B: "Pojazdom z przeciwka jadącym prosto lub w prawo", C: "Tylko pieszym", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Widzisz żółte światło. Co robisz?", A: "Przyspieszasz", B: "Zatrzymujesz się, jeśli możesz bezpiecznie", C: "Ignorujesz", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Pojazd przed Tobą zatrzymał się przed przejściem. Co robisz?", A: "Omijasz", B: "Zatrzymujesz się", C: "Trąbisz", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Jedziesz drogą dwukierunkową. Kiedy możesz wyprzedzać?", A: "Zawsze", B: "Gdy jest to bezpieczne i dozwolone", C: "Nigdy", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Na drodze jest linia podwójna ciągła. Co robisz?", A: "Wyprzedzasz", B: "Nie przekraczasz linii", C: "Ignorujesz oznakowanie", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Dojeżdżasz do ronda ze znakiem ustąp. Co robisz?", A: "Wjeżdżasz", B: "Ustępujesz pojazdom na rondzie", C: "Zatrzymujesz się zawsze", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Zbliżasz się do przejazdu kolejowego bez zapór. Co robisz?", A: "Przyspieszasz", B: "Zachowujesz szczególną ostrożność", C: "Ignorujesz", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Jedziesz w korku. Czy możesz wjechać na skrzyżowanie bez możliwości zjazdu?", A: "Tak", B: "Nie", C: "Tylko nocą", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Zbliżasz się do przejścia dla pieszych. Co robisz?", A: "Przyspieszasz", B: "Zwalniasz", C: "Trąbisz", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Jak zachować się na śliskiej nawierzchni?", A: "Gwałtownie hamować", B: "Jechać płynnie", C: "Przyspieszać", answer: "B", points: 3, type: "abc", category: "Technika" },
+            { text: "Co robisz przy aquaplaningu?", A: "Hamujesz", B: "Zdejmujesz nogę z gazu", C: "Skręcasz", answer: "B", points: 3, type: "abc", category: "Technika" },
+            { text: "Co wpływa na drogę hamowania?", A: "Tylko prędkość", B: "Prędkość i warunki", C: "Nic", answer: "B", points: 3, type: "abc", category: "Technika" },
+            { text: "Jak prawidłowo hamować awaryjnie?", A: "Pulsacyjnie bez ABS", B: "Mocno i zdecydowanie", C: "Lekko", answer: "B", points: 3, type: "abc", category: "Technika" },
+            { text: "Osoba nie oddycha. Co robisz?", A: "Nic", B: "RKO", C: "Dajesz wodę", answer: "B", points: 3, type: "abc", category: "Pierwsza Pomoc" },
+            { text: "Osoba oddycha, ale nieprzytomna.", A: "Na plecy", B: "Pozycja boczna", C: "Sadzasz", answer: "B", points: 3, type: "abc", category: "Pierwsza Pomoc" },
+            { text: "Krwotok z rany:", A: "Czekasz", B: "Uciskasz", C: "Ignorujesz", answer: "B", points: 3, type: "abc", category: "Pierwsza Pomoc" },
+            { text: "Wypadek drogowy – pierwszy krok:", A: "Ucieczka", B: "Zabezpieczenie miejsca", C: "Telefon później", answer: "B", points: 3, type: "abc", category: "Pierwsza Pomoc" },
+            { text: "Oparzenie:", A: "Smarujesz tłuszczem", B: "Chłodzisz wodą", C: "Nic", answer: "B", points: 3, type: "abc", category: "Pierwsza Pomoc" },
+            { text: "Minimalny odstęp od rowerzysty:", A: "0,5 m", B: "1 m", C: "2 m zawsze", answer: "B", points: 3, type: "abc", category: "Bezpieczeństwo" },
+            { text: "Pas awaryjny służy do:", A: "Jazdy", B: "Zatrzymania w awarii", C: "Wyprzedzania", answer: "B", points: 3, type: "abc", category: "Bezpieczeństwo" },
+            { text: "Dziecko w samochodzie:", A: "Bez pasów", B: "Fotelik", C: "Na kolanach", answer: "B", points: 3, type: "abc", category: "Bezpieczeństwo" },
+            { text: "Zawracanie na autostradzie:", A: "Dozwolone", B: "Zabronione", C: "Tylko nocą", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Skręt bez kierunkowskazu:", A: "OK", B: "Wykroczenie", C: "Tylko nocą", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Prędkość powinna być:", A: "Maksymalna", B: "Dostosowana", C: "Dowolna", answer: "B", points: 3, type: "abc", category: "Bezpieczeństwo" },
+            { text: "Droga hamowania przy deszczu:", A: "Krótsza", B: "Dłuższa", C: "Bez zmian", answer: "B", points: 3, type: "abc", category: "Technika" },
+            { text: "Zbliżasz się do przejścia, pieszy stoi i patrzy na drogę. Co robisz?", A: "Jedziesz dalej", B: "Zwolniasz i przygotowujesz się do zatrzymania", C: "Trąbisz", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Jedziesz 90 km/h, nagle przeszkoda. Co robisz?", A: "Hamujesz i omijasz", B: "Skręcasz gwałtownie", C: "Przyspieszasz", answer: "A", points: 3, type: "abc", category: "Technika" },
+            { text: "Poślizg nadsterowny – reakcja?", A: "Skręt przeciwny", B: "Skręt w stronę poślizgu", C: "Hamulec ręczny", answer: "B", points: 3, type: "abc", category: "Technika" },
+            { text: "Widzisz karetkę na sygnale. Co robisz?", A: "Przyspieszasz", B: "Ustępujesz i umożliwiasz przejazd", C: "Ignorujesz", answer: "B", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Droga mokra – co się zmienia?", A: "Nic", B: "Droga hamowania się wydłuża", C: "Skraca się", answer: "B", points: 3, type: "abc", category: "Technika" },
+            { text: "Kiedy należy używać świateł przeciwmgielnych tylnych?", A: "Zawsze", B: "Przy dobrej widoczności", C: "Przy ograniczonej widoczności (<50 m)", answer: "C", points: 3, type: "abc", category: "Technika" },
+            { text: "ABS działa poprzez:", A: "Zwiększenie siły hamowania", B: "Zapobieganie blokowaniu kół", C: "Skracanie drogi hamowania zawsze", answer: "B", points: 3, type: "abc", category: "Technika" },
+            { text: "Co zrobić przy poślizgu nadsterownym?", A: "Skręcić przeciwnie do poślizgu", B: "Skręcić w stronę poślizgu", C: "Hamować", answer: "B", points: 3, type: "abc", category: "Technika" },
+            { text: "Pierwsza pomoc – brak oddechu:", A: "Ułożyć na boku", B: "RKO", C: "Zostawić", answer: "B", points: 3, type: "abc", category: "Pierwsza Pomoc" },
+            { text: "Pierwszeństwo na rondzie ze znakiem ustąp:", A: "Pojazdy na rondzie", B: "Pojazd wjeżdżający", C: "Piesi", answer: "A", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Linia ciągła oznacza:", A: "Zakaz wyprzedzania", B: "Zwolnienie", C: "Zakaz przekraczania", answer: "C", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Skrzyżowanie równorzędne:", A: "Prawa ręka", B: "Lewa ręka", C: "Kto szybszy", answer: "A", points: 3, type: "abc", category: "Przepisy" },
+            { text: "Droga hamowania rośnie wraz z:", A: "Masa samochodu", B: "Długością samochodu", C: "Prędkością", answer: "C", points: 3, type: "abc", category: "Technika" },
+            { text: "Mokra nawierzchnia powoduje:", A: "Lepszą przyczepność", B: "Dłuższą drogę hamowania", C: "Brak zmian", answer: "B", points: 3, type: "abc", category: "Technika" },
+            { text: "Brak tętna:", A: "Czekasz", B: "RKO", C: "Woda", answer: "B", points: 3, type: "abc", category: "Pierwsza Pomoc" },
+            // ABC 2 pkt
+            { text: "Jak zmniejszyć zużycie paliwa?", A: "Gwałtowna jazda", B: "Płynna jazda", C: "Jazda na wysokich obrotach", answer: "B", points: 2, type: "abc", category: "Technika" },
+            { text: "Kiedy używasz świateł drogowych?", A: "W mieście zawsze", B: "Poza obszarem zabudowanym, gdy nie oślepiasz", C: "Nigdy", answer: "B", points: 2, type: "abc", category: "Technika" },
+            { text: "Jazda na suwak:", A: "Kto pierwszy", B: "Naprzemiennie", C: "Lewy ma pierwszeństwo", answer: "B", points: 2, type: "abc", category: "Przepisy" },
+            { text: "ABS powoduje:", A: "Blokowanie kół", B: "Kontrolę nad pojazdem przy hamowaniu", C: "Szybsze zatrzymanie zawsze", answer: "B", points: 2, type: "abc", category: "Technika" },
+            { text: "Optymalne trzymanie kierownicy:", A: "Jedną ręką", B: "10 i 2 / 9 i 3", C: "Dowolnie", answer: "B", points: 2, type: "abc", category: "Technika" },
+            { text: "Kiedy zmieniasz bieg na wyższy?", A: "Przy niskich obrotach", B: "Przy wysokich obrotach", C: "Nigdy", answer: "A", points: 2, type: "abc", category: "Technika" },
+            { text: "Ciśnienie w oponach:", A: "Bez znaczenia", B: "Wpływa na prowadzenie", C: "Tylko na spalanie", answer: "B", points: 2, type: "abc", category: "Technika" },
+            { text: "Wyprzedzanie przed zakrętem:", A: "Dozwolone", B: "Zabronione", C: "Tylko w dzień", answer: "B", points: 2, type: "abc", category: "Przepisy" },
+            { text: "Ekonomiczna jazda to:", A: "Płynna", B: "Szybka", C: "Wolna", answer: "A", points: 2, type: "abc", category: "Technika" },
+            { text: "Ciśnienie w oponach sprawdza się:", A: "Na ciepłych oponach", B: "Na zimnych oponach", C: "Podczas jazdy", answer: "B", points: 2, type: "abc", category: "Technika" },
+            { text: "Zużyte amortyzatory:", A: "Poprawiają komfort", B: "Nie mają wpływu", C: "Pogarszają przyczepność", answer: "C", points: 2, type: "abc", category: "Technika" },
+            { text: "Oparzenie należy:", A: "Smarować tłuszczem", B: "Chłodzić wodą", C: "Zostawić", answer: "B", points: 2, type: "abc", category: "Pierwsza Pomoc" },
+            { text: "Co oznacza migające zielone światło?", A: "Można jechać szybciej", B: "Za chwilę zmieni się na żółte", C: "Należy się zatrzymać natychmiast", answer: "B", points: 2, type: "abc", category: "Przepisy" },
+            { text: "Minimalna głębokość bieżnika:", A: "0,8 mm", B: "1,6 mm", C: "3 mm", answer: "B", points: 2, type: "abc", category: "Technika" },
+            { text: "Hamowanie silnikiem polega na:", A: "Dodaniu gazu", B: "Redukcji biegu", C: "Wyłączeniu silnika", answer: "B", points: 2, type: "abc", category: "Technika" },
+            { text: "Kiedy należy sprawdzić poziom oleju?", A: "Na ciepłym silniku", B: "Na zimnym", C: "Podczas jazdy", answer: "B", points: 2, type: "abc", category: "Technika" }
+        ];
 
-    if (!savedUser || !savedPass) {
-        window.location.href = "index.html"; // Przekieruj jeśli brak logowania
-    } else {
-        initPage();
-    }
+        // --- KONFIGURACJA ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-Qxs9Zd0x1_1tpsiAQJE9QYkdPIARPXU",
+            authDomain: "dord---ewidencja-kursow.firebaseapp.com",
+            databaseURL: "https://dord---ewidencja-kursow-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "dord---ewidencja-kursow",
+            storageBucket: "dord---ewidencja-kursow.appspot.com",
+            messagingSenderId: "652495067977",
+            appId: "1:652495067977:web:61868205fa85f02d905898"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    function logout() {
-        localStorage.clear();
-        window.location.href = "index.html";
-    }
+        let examQuestions = [];
+        let qIndex = 0;
+        let score = 0;
+        let history = []; 
+        let timerObj;
+        let timeLeft = 0;
+        const PASS = 68;
+        const TARGET = 74;
+        let examActive = false; 
+        let currentKey = ""; // Przechowuje klucz
 
-    async function initPage() {
-        // Uzupełnij pasek górny
-        document.getElementById('tbName').innerText = savedUser;
+        // --- LOGOWANIE ---
+        document.getElementById('keyInput').addEventListener('keyup', e => { if(e.key==='Enter') validateKey(); });
 
-        // Pobierz rolę użytkownika
-        try {
-            const userSnap = await db.ref('users/' + savedUser).once('value');
-            if (userSnap.exists()) {
-                const u = userSnap.val();
-                document.getElementById('tbRole').innerText = u.role || 'Pracownik';
-            } else {
-                document.getElementById('tbRole').innerText = "Nieznana";
-            }
-        } catch (e) {
-            console.error("Błąd pobierania użytkownika:", e);
-            document.getElementById('tbRole').innerText = "Błąd";
-        }
-        
-        loadLogs();
-    }
+        function validateKey() {
+            const key = document.getElementById('keyInput').value.trim().toUpperCase();
+            const err = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+            const spin = document.getElementById('loginSpinner');
 
-    // ==================================================
-    // ŁADOWANIE LOGÓW (Z OBSŁUGĄ BŁĘDÓW)
-    // ==================================================
-    function loadLogs() {
-        const container = document.getElementById('logsContainer');
-        
-        // Używamy .once().then().catch() aby wyłapać błędy uprawnień
-        db.ref('examLogs').orderByChild('date').limitToLast(100).once('value')
-        .then(snapshot => {
+            if(!key || key.length !== 9) return showError("Wpisz klucz w formacie XXXX-XXXX");
             
-            if (!snapshot.exists()) {
-                container.innerHTML = '<div class="status-screen"><h3>Brak wyników</h3><p>Nie znaleziono żadnych zapisanych egzaminów.</p></div>';
-                updateStats(0, 0, 0);
-                return;
+            btn.style.display = 'none';
+            spin.style.display = 'block';
+            err.innerText = "";
+
+            db.ref('examKeys/' + key).get().then(snap => {
+                if(!snap.exists()) { showError("Klucz nie istnieje w systemie."); resetBtn(); return; }
+                const data = snap.val();
+                if(data.status !== 'active') { showError("Ten klucz został już wykorzystany."); resetBtn(); return; }
+
+                db.ref('examKeys/' + key).transaction(d => {
+                    if(d.status === 'active') return { status: 'used', usedAt: Date.now() };
+                    else return; 
+                }, (error, committed, nsnap) => {
+                    if(error) { showError("Błąd zapisu."); resetBtn(); }
+                    else if(!committed) { showError("Klucz wykorzystany w tym samym momencie."); resetBtn(); }
+                    else { 
+                        currentKey = key; // Zapisz klucz globalnie
+                        startExam(); 
+                    }
+                });
+            }).catch(err => { showError("Błąd połączenia."); resetBtn(); });
+        }
+
+        function showError(msg) { document.getElementById('loginError').innerText = msg; }
+        function resetBtn() {
+            document.getElementById('loginBtn').style.display = 'block';
+            document.getElementById('loginSpinner').style.display = 'none';
+        }
+
+        // --- ANTY-OSZUSTWO ---
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && examActive) triggerFail();
+        });
+        window.onblur = () => { if(examActive) triggerFail(); };
+
+        function triggerFail() {
+            clearInterval(timerObj);
+            examActive = false;
+            saveResult('TERMINATED'); // Zapisz przerwany
+            document.getElementById('examScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('failScreen').style.display = 'flex';
+        }
+
+        // --- LOGIKA EGZAMINU ---
+        function startExam() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('examScreen').style.display = 'flex';
+            examActive = true;
+
+            const poolTF = questionsData.filter(q => q.type === 'tf');
+            const poolABC = questionsData.filter(q => q.type === 'abc');
+
+            let tf = shuffle(poolTF);
+            let abc = shuffle(poolABC);
+            
+            let selTF = [], ptsTF = 0;
+            let tf3 = tf.filter(q=>q.points===3);
+            let tf2 = tf.filter(q=>q.points===2);
+            let tf1 = tf.filter(q=>q.points===1);
+            
+            while(selTF.length < 20) {
+                if(tf3.length > 0 && (ptsTF + 3) <= 60) { let q = tf3.pop(); selTF.push(q); ptsTF += q.points; }
+                else if(tf2.length > 0 && (ptsTF + 2) <= 60) { let q = tf2.pop(); selTF.push(q); ptsTF += q.points; }
+                else if(tf1.length > 0) { let q = tf1.pop(); selTF.push(q); ptsTF += q.points; }
+                else { let q = tf.pop(); if(q) { selTF.push(q); ptsTF += q.points; } else break; }
             }
 
-            const logs = [];
-            snapshot.forEach(child => { logs.push(child.val()); });
-            logs.reverse(); // Najnowsze na górze
+            let selABC = [], ptsABC = 0;
+            let abc3 = abc.filter(q=>q.points===3);
+            let abc2 = abc.filter(q=>q.points===2);
+            while(selABC.length < 12) {
+                if(abc3.length > 0) { let q = abc3.pop(); selABC.push(q); ptsABC += q.points; }
+                else if(abc2.length > 0) { let q = abc2.pop(); selABC.push(q); ptsABC += q.points; }
+                else { let q = abc.pop(); if(q) { selABC.push(q); ptsABC += q.points; } else break; }
+            }
 
-            updateStats(logs.length, logs.filter(l => l.passed).length, logs.filter(l => !l.passed).length);
+            examQuestions = [...selTF, ...selABC];
+            document.getElementById('qTotal').innerText = examQuestions.length;
+            loadQ();
+        }
+
+        function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+        function loadQ() {
+            if(qIndex >= examQuestions.length) { finishExam(); return; }
+            
+            const q = examQuestions[qIndex];
+            
+            document.getElementById('qNum').innerText = qIndex + 1;
+            document.getElementById('qNumBg').innerText = qIndex + 1;
+            document.getElementById('qCat').innerText = q.category;
+            document.getElementById('qText').innerText = q.text;
+            
+            const pEl = document.getElementById('qPts');
+            pEl.innerText = q.points + ' pkt';
+            pEl.className = 'points-badge p' + q.points;
+
+            const grid = document.getElementById('ansGrid');
+            grid.innerHTML = '';
+
+            if(q.type === 'tf') {
+                document.getElementById('qCat').innerText = "TAK / NIE";
+                grid.className = 'answers-grid tf';
+                grid.innerHTML = `<div class="ans-btn" onclick="ans('TAK')">TAK</div><div class="ans-btn" onclick="ans('NIE')">NIE</div>`;
+                startTimer(20);
+            } else {
+                document.getElementById('qCat').innerText = "WYBÓR";
+                grid.className = 'answers-grid abc';
+                grid.innerHTML = `
+                    <div class="ans-btn" onclick="ans('A')">A. ${q.A}</div>
+                    <div class="ans-btn" onclick="ans('B')">B. ${q.B}</div>
+                    <div class="ans-btn" onclick="ans('C')">C. ${q.C}</div>
+                `;
+                startTimer(50);
+            }
+        }
+
+        function startTimer(secs) {
+            clearInterval(timerObj);
+            timeLeft = secs;
+            const bar = document.getElementById('tBar');
+            bar.style.width = '100%';
+
+            timerObj = setInterval(() => {
+                timeLeft--;
+                bar.style.width = ((timeLeft / secs) * 100) + '%';
+                if(timeLeft <= 0) { clearInterval(timerObj); timeOut(); }
+            }, 1000);
+        }
+
+        function timeOut() { registerAnswer(null); }
+        function ans(v) { clearInterval(timerObj); registerAnswer(v); }
+
+        function registerAnswer(userAns) {
+            const q = examQuestions[qIndex];
+            const correct = userAns === q.answer;
+            if(correct) score += q.points;
+            history.push({ q: q, user: userAns, ok: correct });
+            qIndex++;
+            loadQ();
+        }
+
+        // --- ZAPIS WYNIKU ---
+        function saveResult(status) {
+            // Oblicz maxScore dla pewności
+            const maxScore = examQuestions.reduce((s, q) => s + q.points, 0);
+            
+            const logData = {
+                date: Date.now(),
+                key: currentKey,
+                score: score,
+                maxScore: maxScore, 
+                passed: score >= PASS,
+                status: status, 
+                details: history
+            };
+            
+            // Zapis do węzła examLogs
+            db.ref('examLogs').push(logData)
+              .then(() => console.log("Wynik zapisany."))
+              .catch(e => console.error("Błąd zapisu wyniku:", e));
+        }
+
+        function finishExam() {
+            examActive = false;
+            saveResult('COMPLETED'); // Zapisz ukończony
+
+            document.getElementById('examScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'flex';
+
+            const passed = score >= PASS;
+            
+            const circle = document.getElementById('resCircle');
+            const title = document.getElementById('resTitle');
+            const desc = document.getElementById('resDesc');
+            
+            document.getElementById('resScoreVal').innerText = score;
+            
+            if(passed) {
+                circle.className = 'result-circle-lg pass';
+                title.innerText = "WYNIK POZYTYWNY";
+                title.style.color = "var(--success)";
+                desc.innerText = "Gratulacje! Osiągnąłeś wymagany próg ("+PASS+" pkt).";
+            } else {
+                circle.className = 'result-circle-lg fail';
+                title.innerText = "WYNIK NEGATYWNY";
+                title.style.color = "var(--danger)";
+                desc.innerText = "Wymagane minimum " + PASS + " punktów.";
+            }
 
             let html = '';
-            logs.forEach(log => {
-                const date = new Date(log.date);
-                const dateStr = date.toLocaleString('pl-PL');
+            history.forEach((h, i) => {
+                let statusClass = h.ok ? 'ok' : 'bad';
+                let statusText = h.ok ? 'POPRAWNA' : 'BŁĄD / BRAK';
+                let uAns = h.user || 'BRAK';
                 
-                let badgeClass = log.passed ? 'badge-pass' : 'badge-fail';
-                let badgeText = log.passed ? 'ZALICZONY' : 'NIEZALICZONY';
-
-                if (log.status === 'TERMINATED') {
-                    badgeClass = 'badge-term';
-                    badgeText = 'PRZERWANY';
-                }
-
-                // Generowanie tabeli szczegółów
-                let detailsHtml = '';
-                if (log.details && log.details.length > 0) {
-                    detailsHtml = `<table class="detail-table">
-                        <thead><tr><th style="width:60%">Pytanie</th><th>Odpowiedź</th><th>Pkt</th></tr></thead>
-                        <tbody>`;
-                    
-                    log.details.forEach(d => {
-                        const statusIcon = d.ok ? '<span class="status-icon correct">✔</span>' : '<span class="status-icon wrong">✖</span>';
-                        const uAns = d.user || 'BRAK';
-                        detailsHtml += `<tr>
-                            <td>${d.text}</td>
-                            <td style="text-align:center">${uAns} (${d.correct})</td>
-                            <td style="text-align:center; font-weight:700;">${statusIcon} ${d.points}</td>
-                        </tr>`;
-                    });
-                    detailsHtml += `</tbody></table>`;
+                let answerContent = '';
+                if(h.q.type === 'abc') {
+                    let letterContent = '';
+                    if(uAns === 'A') letterContent = h.q.A;
+                    else if(uAns === 'B') letterContent = h.q.B;
+                    else if(uAns === 'C') letterContent = h.q.C;
+                    else letterContent = '-';
+                    answerContent = `Twoja odpowiedź: <strong>${uAns}. ${letterContent}</strong>`;
                 } else {
-                    detailsHtml = '<div style="padding:10px; color:#888; font-size:12px; text-align:center;">Brak szczegółów (sesja przerwana).</div>';
+                    answerContent = `Twoja odpowiedź: <strong>${uAns}</strong>`;
                 }
 
                 html += `
-                    <div class="log-card">
-                        <div class="log-header" onclick="toggleDetails(this)">
-                            <div class="log-info">
-                                <h3>Klucz: ${log.key}</h3>
-                                <p>${dateStr}</p>
-                            </div>
-                            <div class="log-right">
-                                <div class="log-score">${log.score}/${log.maxScore}</div>
-                                <span class="log-badge ${badgeClass}">${badgeText}</span>
-                            </div>
+                    <div class="history-card">
+                        <div class="h-top-row">
+                            <span class="h-qid">Pytanie ${i+1}</span>
+                            <span class="h-status-badge-lg ${statusClass}">${statusText}</span>
                         </div>
-                        <div class="log-details">
-                            ${detailsHtml}
-                        </div>
+                        <div class="h-content-text">${h.q.text}</div>
+                        <div class="h-ans-text">${answerContent}</div>
                     </div>
                 `;
             });
-
-            container.innerHTML = html;
-        })
-        .catch(error => {
-            console.error("Błąd Firebase:", error);
-            container.innerHTML = `<div class="status-screen error">
-                <h3>⚠️ Błąd dostępu do danych</h3>
-                <p>Nie udało się pobrać wyników egzaminów.</p>
-                <p style="font-size:10px; color:#999;">Sprawdź reguły bezpieczeństwa bazy Firebase (Firebase Rules) dla węzła 'examLogs'. Muszą pozwalać na odczyt (.read true).</p>
-            </div>`;
-        });
-    }
-
-    function updateStats(total, pass, fail) {
-        document.getElementById('statTotal').innerText = total;
-        document.getElementById('statPass').innerText = pass;
-        document.getElementById('statFail').innerText = fail;
-    }
-
-    function toggleDetails(header) {
-        const details = header.nextElementSibling;
-        // Toggle display
-        if (details.style.display === 'block') {
-            details.style.display = 'none';
-        } else {
-            details.style.display = 'block';
+            document.getElementById('historyList').innerHTML = html;
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>
