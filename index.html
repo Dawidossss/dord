@@ -21,7 +21,7 @@
         @media (max-width: 500px) { .dord-grid { grid-template-columns: 1fr; } }
 
         /* Karty Menu */
-        .dord-menu-card { background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 25px 20px; text-align: center; text-decoration: none; color: #111; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s; display: block; border-bottom: 4px solid transparent; }
+        .dord-menu-card { background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 25px 20px; text-align: center; text-decoration: none; color: #111; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s; display: block; border-bottom: 4px solid transparent; cursor: pointer; }
         .dord-menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-bottom-color: #f1c40f; }
         .dord-menu-icon { font-size: 36px; margin-bottom: 12px; display: block; }
         .dord-menu-name { font-weight: 700; font-size: 16px; display: block; margin-bottom: 5px; }
@@ -43,11 +43,12 @@
         .btn-logout { background: transparent; border: 1px solid #f1c40f; color: #f1c40f; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; }
         .btn-admin { background: #e74c3c; color: white; border: none; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; margin-right: 10px; display: none; }
 
-        /* --- PANEL ZARZĄDZANIA --- */
-        #managementModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: flex-start; padding-top: 30px; overflow-y: auto; }
-        .mgmt-container { background: #fff; width: 90%; max-width: 600px; border-radius: 15px; padding: 20px; margin-bottom: 30px; }
+        /* --- PANEL ZARZĄDZANIA I WYNIKI (MODAILE) --- */
+        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: flex-start; padding-top: 30px; overflow-y: auto; }
+        .mgmt-container { background: #fff; width: 90%; max-width: 600px; border-radius: 15px; padding: 20px; margin-bottom: 30px; position: relative; }
         .mgmt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .mgmt-title { font-size: 18px; font-weight: 700; }
+        .btn-close { background: #eee; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; }
         
         .user-card-mgmt { background: #f9f9f9; border: 1px solid #eee; border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px; }
         .user-card-mgmt-header { display: flex; justify-content: space-between; align-items: center; }
@@ -56,20 +57,41 @@
         
         .mgmt-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .mgmt-row label { font-size: 12px; font-weight: 600; width: 100%; }
-        .mgmt-row select, .mgmt-row input { padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
+        .mgmt-row select, .mgmt-row input { padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; flex: 1; }
+        .checkbox-group { display: flex; gap: 10px; align-items: center; }
+        
+        .btn-mgmt { padding: 6px 12px; border-radius: 12px; font-size: 13px; }
         .mgmt-row input[type="checkbox"] { width: auto; transform: scale(1.2); }
         .checkbox-group { display: flex; gap: 10px; align-items: center; }
         
         .btn-mgmt { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: none; }
         .btn-mgmt-save { background: #27ae60; color: white; }
         .btn-mgmt-del { background: #e74c3c; color: white; }
-        .btn-mgmt-cancel { background: #eee; color: #333; }
 
-        /* Modal Dodawania */
-        #adminModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 10001; justify-content: center; align-items: center; }
-        .add-user-form { text-align: left; }
-        .add-user-form .form-group { margin-bottom: 10px; }
-        .add-user-form label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+        /* --- STYLE DLA WYNIKÓW (EGZAMINY) --- */
+        .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
+        .stat-val { font-size: 24px; font-weight: 800; }
+        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; margin-top: 5px; }
+        .stat-box.green .stat-val { color: #27ae60; }
+        .stat-box.red .stat-val { color: #e74c3c; }
+
+        .log-list { display: flex; flex-direction: column; gap: 10px; }
+        .log-card { background: #fff; border: 1px solid #eee; border-radius: 8px; overflow: hidden; border-left: 5px solid #ccc; }
+        .log-card.pass { border-left-color: #27ae60; }
+        .log-card.fail { border-left-color: #e74c3c; }
+        .log-header { padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .log-info h3 { margin: 0 0 4px 0; font-size: 14px; }
+        .log-info p { margin: 0; font-size: 11px; color: #888; }
+        .log-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; color: #fff; }
+        .badge-pass { background: #27ae60; }
+        .badge-fail { background: #e74c3c; }
+        
+        .log-details { display: none; background: #fafafa; border-top: 1px solid #eee; padding: 10px; font-size: 11px; max-height: 200px; overflow-y: auto; }
+        .detail-table { width: 100%; border-collapse: collapse; }
+        .detail-table td { padding: 4px 0; border-bottom: 1px solid #eee; }
+        .correct { color: #27ae60; font-weight: bold; }
+        .wrong { color: #e74c3c; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -88,10 +110,10 @@
     </div>
 
     <!-- MODAL ZMIANY HASŁA -->
-    <div id="changePassModal">
-        <div class="login-box">
+    <div id="changePassModal" class="modal-overlay" style="align-items: center;">
+        <div class="login-box" style="width: 340px;">
             <h2>🔑 Zmień hasło</h2>
-            <p style="font-size: 12px; color: #666;">Ustal własne hasło.</p>
+            <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Ustal własne hasło.</p>
             <input type="password" id="newPass1" placeholder="Nowe hasło">
             <input type="password" id="newPass2" placeholder="Powtórz hasło">
             <div id="changePassError" class="login-error"></div>
@@ -100,55 +122,73 @@
     </div>
 
     <!-- MODAL DODAWANIA UŻYTKOWNIKA -->
-    <div id="adminModal">
-        <div class="login-box" style="width: 380px; text-align: left;">
-            <h2 style="text-align: center;">👑 Nowy Pracownik</h2>
-            <div class="add-user-form">
-                <div class="form-group">
-                    <label>Login</label>
-                    <input type="text" id="newUserLogin" class="dord-input" placeholder="np. jan.kowalski">
-                </div>
-                <div class="form-group">
-                    <label>Hasło startowe</label>
-                    <input type="password" id="newUserPass" class="dord-input" placeholder="Tymczasowe hasło">
-                </div>
-                <div class="form-group">
-                    <label>Stanowisko</label>
-                    <select id="newUserRole" class="dord-input">
-                        <option value="Młodszy Egzaminator">Młodszy Egzaminator</option>
-                        <option value="Egzaminator">Egzaminator</option>
-                        <option value="Starszy Egzaminator">Starszy Egzaminator</option>
-                        <option value="Zastępca Kierownika">Zastępca Kierownika</option>
-                        <option value="Kierownik">Kierownik</option>
-                        <option value="Zastępca Dyrektora">Zastępca Dyrektora</option>
-                        <option value="Dyrektor Ośrodka">Dyrektor Ośrodka</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Zezwolenia</label>
-                    <div class="checkbox-group">
-                        <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_t"> Teoria</label>
-                        <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_p"> Praktyka</label>
-                        <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_k"> Kursy</label>
-                    </div>
+    <div id="adminModal" class="modal-overlay" style="align-items: center;">
+        <div class="mgmt-container" style="width: 380px; margin-bottom: 0;">
+            <div class="mgmt-title" style="text-align: center; margin-bottom: 15px;">👑 Nowy Pracownik</div>
+            <div class="mgmt-row">
+                <label>Login</label>
+                <input type="text" id="newUserLogin" placeholder="np. jan.kowalski">
+            </div>
+            <div class="mgmt-row">
+                <label>Hasło startowe</label>
+                <input type="password" id="newUserPass" placeholder="Tymczasowe hasło">
+            </div>
+            <div class="mgmt-row">
+                <label>Stanowisko</label>
+                <select id="newUserRole">
+                    <option value="Młodszy Egzaminator">Młodszy Egzaminator</option>
+                    <option value="Egzaminator">Egzaminator</option>
+                    <option value="Starszy Egzaminator">Starszy Egzaminator</option>
+                    <option value="Zastępca Kierownika">Zastępca Kierownika</option>
+                    <option value="Kierownik">Kierownik</option>
+                    <option value="Zastępca Dyrektora">Zastępca Dyrektora</option>
+                    <option value="Dyrektor Ośrodka">Dyrektor Ośrodka</option>
+                </select>
+            </div>
+            <div class="mgmt-row">
+                <label>Zezwolenia</label>
+                <div class="checkbox-group">
+                    <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_t"> Teoria</label>
+                    <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_p"> Praktyka</label>
+                    <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_k"> Kursy</label>
                 </div>
             </div>
-            <div class="dord-actions-row" style="margin-top:15px;">
-                <button class="dord-btn dord-btn-sec" onclick="document.getElementById('adminModal').style.display='none'" style="flex:1">Anuluj</button>
-                <button class="dord-btn dord-btn-main" onclick="createUser()" style="flex:1">Utwórz</button>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn-mgmt" style="background:#eee; color:#111; flex:1" onclick="document.getElementById('adminModal').style.display='none'">Anuluj</button>
+                <button class="btn-mgmt btn-mgmt-save" style="flex:1" onclick="createUser()">Utwórz</button>
             </div>
             <div id="adminMsg" class="login-error" style="margin-top:10px; text-align: center;"></div>
         </div>
     </div>
 
     <!-- MODAL ZARZĄDZANIA UŻYTKOWNIKAMI -->
-    <div id="managementModal">
+    <div id="managementModal" class="modal-overlay">
         <div class="mgmt-container">
             <div class="mgmt-header">
                 <div class="mgmt-title">👥 Zarządzanie Pracownikami</div>
-                <button class="btn-mgmt btn-mgmt-cancel" onclick="document.getElementById('managementModal').style.display='none'">Zamknij</button>
+                <button class="btn-close" onclick="document.getElementById('managementModal').style.display='none'">Zamknij</button>
             </div>
             <div id="userListContainer">Ładowanie...</div>
+        </div>
+    </div>
+
+    <!-- MODAL WYNIKÓW EGZAMINÓW -->
+    <div id="resultsModal" class="modal-overlay">
+        <div class="mgmt-container">
+            <div class="mgmt-header">
+                <div class="mgmt-title">📊 Historia Egzaminów</div>
+                <button class="btn-close" onclick="document.getElementById('resultsModal').style.display='none'">Zamknij</button>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat-box"><div class="stat-val" id="statTotal">0</div><div class="stat-label">Wszystkie</div></div>
+                <div class="stat-box green"><div class="stat-val" id="statPass">0</div><div class="stat-label">Zdane</div></div>
+                <div class="stat-box red"><div class="stat-val" id="statFail">0</div><div class="stat-label">Niezdane</div></div>
+            </div>
+
+            <div id="resultsContainer" class="log-list">
+                <div style="text-align:center; padding:20px; color:#888;">Ładowanie...</div>
+            </div>
         </div>
     </div>
 
@@ -201,12 +241,12 @@
                 <span class="dord-menu-desc">Dostęp do egzaminu</span>
             </a>
 
-            <!-- NOWA POZYCJA: WYNIKI EGZAMINÓW -->
-            <a href="egzaminteoretycznylogi.html" class="dord-menu-card">
+            <!-- ZMIENIONO: onclick zamiast href, otwiera MODAL -->
+            <div class="dord-menu-card" onclick="openResults()">
                 <span class="dord-menu-icon">📊</span>
                 <span class="dord-menu-name">Wyniki Egzaminów</span>
                 <span class="dord-menu-desc">Logi i statystyki</span>
-            </a>
+            </div>
         </div>
 
         <div class="dord-footer">
@@ -218,7 +258,6 @@
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
 <script>
     // ==================================================
     // KONFIGURACJA
@@ -228,72 +267,45 @@
         authDomain: "dord---ewidencja-kursow.firebaseapp.com",
         databaseURL: "https://dord---ewidencja-kursow-default-rtdb.europe-west1.firebasedatabase.app",
         projectId: "dord---ewidencja-kursow",
-        storageBucket: "dord---ewidencja-kursow.firebasestorage.app",
+        storageBucket: "dord---ewidencja-kursow.appspot.com",
         messagingSenderId: "652495067977",
-        appId: "1:652495067977:web:61868205fa85f02d905898",
-        measurementId: "G-26TGJXYS6X"
+        appId: "1:652495067977:web:61868205fa85f02d905898"
     };
     
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Stale stanowisk
-    const ROLES = [
-        "Młodszy Egzaminator", "Egzaminator", "Starszy Egzaminator", 
-        "Zastępca Kierownika", "Kierownik", 
-        "Zastępca Dyrektora", "Dyrektor Ośrodka"
-    ];
-
+    const ROLES = ["Młodszy Egzaminator", "Egzaminator", "Starszy Egzaminator", "Zastępca Kierownika", "Kierownik", "Zastępca Dyrektora", "Dyrektor Ośrodka"];
     let currentUser = null;
 
     window.onload = function() {
         const savedUser = localStorage.getItem('dordUser');
         const savedPass = localStorage.getItem('dordPass');
-        
-        if (savedUser && savedPass) {
-            verifyLogin(savedUser, savedPass, true);
-        } else {
-            document.getElementById('login-overlay').style.display = 'flex';
-        }
+        if (savedUser && savedPass) verifyLogin(savedUser, savedPass, true);
+        else document.getElementById('login-overlay').style.display = 'flex';
     };
 
     function attemptLogin() {
         const user = document.getElementById('loginUsername').value.trim();
         const pass = document.getElementById('loginPassword').value.trim();
-        if(!user || !pass) {
-             document.getElementById('loginError').innerText = "Uzupełnij pola.";
-             return;
-        }
+        if(!user || !pass) return document.getElementById('loginError').innerText = "Uzupełnij pola.";
         verifyLogin(user, pass, false);
     }
 
     function verifyLogin(username, password, isAutoLogin) {
         db.ref('users/' + username).once('value', (snapshot) => {
             const data = snapshot.val();
-            
             if (data && data.password === password) {
-                // Logowanie udane
-                currentUser = { 
-                    username: username, 
-                    role: data.role || 'user', 
-                    permissions: data.permissions || {} 
-                };
-                
+                currentUser = { username: username, role: data.role || 'user', permissions: data.permissions || {} };
                 localStorage.setItem('dordUser', username);
                 localStorage.setItem('dordPass', password);
-
                 if (data.forceChange === true) {
                     document.getElementById('login-overlay').style.display = 'none';
                     document.getElementById('changePassModal').style.display = 'flex';
-                } else {
-                    enterSystem();
-                }
+                } else enterSystem();
             } else {
-                if (!isAutoLogin) {
-                    document.getElementById('loginError').innerText = "Błędny login lub hasło.";
-                }
-                localStorage.removeItem('dordUser');
-                localStorage.removeItem('dordPass');
+                if (!isAutoLogin) document.getElementById('loginError').innerText = "Błędny login lub hasło.";
+                localStorage.removeItem('dordUser'); localStorage.removeItem('dordPass');
                 document.getElementById('login-overlay').style.display = 'flex';
             }
         });
@@ -303,167 +315,130 @@
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('changePassModal').style.display = 'none';
         document.getElementById('mainContent').style.display = 'block';
-        
         document.getElementById('welcomeUser').innerText = currentUser.username;
         document.getElementById('userRoleBadge').innerText = currentUser.role;
-
+        
         const isAdmin = (currentUser.username === 'admin');
         const isDirector = (currentUser.role === 'Dyrektor Ośrodka');
-
-        if (isAdmin) {
-            document.getElementById('btnAdminPanel').style.display = 'inline-block';
-        }
-
-        if (isAdmin || isDirector) {
-            document.getElementById('btnMgmtPanel').style.display = 'inline-block';
-        }
+        if (isAdmin) document.getElementById('btnAdminPanel').style.display = 'inline-block';
+        if (isAdmin || isDirector) document.getElementById('btnMgmtPanel').style.display = 'inline-block';
     }
 
     function changePassword() {
         const p1 = document.getElementById('newPass1').value.trim();
         const p2 = document.getElementById('newPass2').value.trim();
-        
-        if (p1.length < 4) { document.getElementById('changePassError').innerText = "Hasło min. 4 znaki."; return; }
-        if (p1 !== p2) { document.getElementById('changePassError').innerText = "Hasła różnią się."; return; }
-
-        db.ref('users/' + currentUser.username).update({
-            password: p1,
-            forceChange: false
-        }).then(() => {
-            localStorage.setItem('dordPass', p1);
-            enterSystem();
-        });
+        if (p1.length < 4) return document.getElementById('changePassError').innerText = "Hasło min. 4 znaki.";
+        if (p1 !== p2) return document.getElementById('changePassError').innerText = "Hasła różnią się.";
+        db.ref('users/' + currentUser.username).update({ password: p1, forceChange: false }).then(() => { localStorage.setItem('dordPass', p1); enterSystem(); });
     }
 
-    function logout() {
-        localStorage.removeItem('dordUser');
-        localStorage.removeItem('dordPass');
-        location.reload();
-    }
+    function logout() { localStorage.clear(); location.reload(); }
 
     // ==================================================
-    // FUNKCJE ADMINISTRACYJNE
+    // ZARZĄDZANIE (ADMIN)
     // ==================================================
-
-    function openAddModal() {
-        document.getElementById('newUserLogin').value = '';
-        document.getElementById('newUserPass').value = 'start123';
-        document.getElementById('adminModal').style.display = 'flex';
-    }
-
+    function openAddModal() { document.getElementById('newUserLogin').value = ''; document.getElementById('newUserPass').value = 'start123'; document.getElementById('adminModal').style.display = 'flex'; }
+    
     function createUser() {
         const login = document.getElementById('newUserLogin').value.trim();
         const pass = document.getElementById('newUserPass').value.trim();
         const role = document.getElementById('newUserRole').value;
-        
-        const perms = {
-            teoretyczny: document.getElementById('perm_t').checked,
-            praktyczny: document.getElementById('perm_p').checked,
-            kursy: document.getElementById('perm_k').checked
-        };
-
-        if (!login || !pass) { document.getElementById('adminMsg').innerText = "Uzupełnij login i hasło."; return; }
-
-        db.ref('users/' + login).set({
-            password: pass,
-            role: role,
-            permissions: perms,
-            forceChange: true
-        }).then(() => {
-            document.getElementById('adminMsg').innerText = "✅ Utworzono: " + login;
-            document.getElementById('newUserLogin').value = '';
-        }).catch(e => document.getElementById('adminMsg').innerText = "Błąd: "+e.message);
+        const perms = { teoretyczny: document.getElementById('perm_t').checked, praktyczny: document.getElementById('perm_p').checked, kursy: document.getElementById('perm_k').checked };
+        if (!login || !pass) return document.getElementById('adminMsg').innerText = "Uzupełnij login i hasło.";
+        db.ref('users/' + login).set({ password: pass, role: role, permissions: perms, forceChange: true }).then(() => { document.getElementById('adminMsg').innerText = "✅ Utworzono: " + login; document.getElementById('newUserLogin').value = ''; }).catch(e => document.getElementById('adminMsg').innerText = "Błąd: "+e.message);
     }
 
-    // ==================================================
-    // PANEL ZARZĄDZANIA
-    // ==================================================
-
-    function openManagement() {
-        document.getElementById('managementModal').style.display = 'flex';
-        loadUsersForManagement();
-    }
-
+    function openManagement() { document.getElementById('managementModal').style.display = 'flex'; loadUsersForManagement(); }
     function loadUsersForManagement() {
-        const container = document.getElementById('userListContainer');
-        container.innerHTML = 'Ładowanie...';
-
+        const container = document.getElementById('userListContainer'); container.innerHTML = 'Ładowanie...';
         db.ref('users').once('value', (snap) => {
-            const users = snap.val();
-            let html = '';
-
-            if (!users) {
-                container.innerHTML = 'Brak użytkowników.';
-                return;
-            }
-
+            const users = snap.val(); let html = '';
+            if (!users) { container.innerHTML = 'Brak użytkowników.'; return; }
             for (let login in users) {
-                const u = users[login];
-                const perms = u.permissions || {};
-                const isSelf = (login === currentUser.username);
-                const isSuperAdmin = (login === 'admin');
-
-                html += `
-                    <div class="user-card-mgmt">
-                        <div class="user-card-mgmt-header">
-                            <div>
-                                <span class="user-login-label">${login}</span>
-                                ${isSuperAdmin ? '<span style="color:red; font-size:10px; margin-left:5px;">(SUPER ADMIN)</span>' : ''}
-                            </div>
-                            <span class="user-role-label">${u.role}</span>
-                        </div>
-                        
-                        <div class="mgmt-row">
-                            <label>Stanowisko:</label>
-                            <select id="role-${login}" ${isSuperAdmin ? 'disabled' : ''}>
-                                ${ROLES.map(r => `<option value="${r}" ${u.role===r?'selected':''}>${r}</option>`).join('')}
-                            </select>
-                        </div>
-
-                        <div class="mgmt-row">
-                            <label>Zezwolenia:</label>
-                            <div class="checkbox-group">
-                                <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_t_${login}" ${perms.teoretyczny?'checked':''}> Teoria</label>
-                                <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_p_${login}" ${perms.praktyczny?'checked':''}> Praktyka</label>
-                                <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_k_${login}" ${perms.kursy?'checked':''}> Kursy</label>
-                            </div>
-                        </div>
-
-                        <div class="mgmt-row" style="justify-content: flex-end; margin-top:5px;">
-                            <button class="btn-mgmt btn-mgmt-save" onclick="saveUserChanges('${login}')">Zapisz zmiany</button>
-                            ${!isSuperAdmin && !isSelf && currentUser.username === 'admin' ? `<button class="btn-mgmt btn-mgmt-del" onclick="deleteUser('${login}')">Usuń konto</button>` : ''}
-                        </div>
+                const u = users[login]; const perms = u.permissions || {};
+                const isSelf = (login === currentUser.username); const isSuperAdmin = (login === 'admin');
+                html += `<div class="user-card-mgmt">
+                    <div class="user-card-mgmt-header"><div><span class="user-login-label">${login}</span> ${isSuperAdmin ? '<span style="color:red; font-size:10px">(SUPER)</span>' : ''}</div><span class="user-role-label">${u.role}</span></div>
+                    <div class="mgmt-row"><label>Stanowisko:</label><select id="role-${login}" ${isSuperAdmin ? 'disabled' : ''}>${ROLES.map(r => `<option value="${r}" ${u.role===r?'selected':''}>${r}</option>`).join('')}</select></div>
+                    <div class="mgmt-row"><label>Zezwolenia:</label><div class="checkbox-group">
+                        <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_t_${login}" ${perms.teoretyczny?'checked':''}> Teoria</label>
+                        <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_p_${login}" ${perms.praktyczny?'checked':''}> Praktyka</label>
+                        <label style="width:auto; font-weight:400;"><input type="checkbox" id="perm_k_${login}" ${perms.kursy?'checked':''}> Kursy</label>
+                    </div></div>
+                    <div class="mgmt-row" style="justify-content: flex-end; margin-top:5px;">
+                        <button class="btn-mgmt btn-mgmt-save" onclick="saveUserChanges('${login}')">Zapisz zmiany</button>
+                        ${!isSuperAdmin && !isSelf && currentUser.username === 'admin' ? `<button class="btn-mgmt btn-mgmt-del" onclick="deleteUser('${login}')">Usuń</button>` : ''}
                     </div>
-                `;
+                </div>`;
             }
             container.innerHTML = html;
         });
     }
-
     function saveUserChanges(login) {
         const newRole = document.getElementById('role-' + login).value;
-        const newPerms = {
-            teoretyczny: document.getElementById('perm_t_' + login).checked,
-            praktyczny: document.getElementById('perm_p_' + login).checked,
-            kursy: document.getElementById('perm_k_' + login).checked
-        };
+        const newPerms = { teoretyczny: document.getElementById('perm_t_' + login).checked, praktyczny: document.getElementById('perm_p_' + login).checked, kursy: document.getElementById('perm_k_' + login).checked };
+        db.ref('users/' + login).update({ role: newRole, permissions: newPerms }).then(() => { alert('Zaktualizowano.'); loadUsersForManagement(); }).catch(e => alert('Błąd: ' + e.message));
+    }
+    function deleteUser(login) { if (confirm('Usunąć ' + login + '?')) db.ref('users/' + login).remove().then(() => { alert('Usunięto.'); loadUsersForManagement(); }); }
 
-        db.ref('users/' + login).update({
-            role: newRole,
-            permissions: newPerms
-        }).then(() => {
-            alert('Zaktualizowano użytkownika ' + login);
-            loadUsersForManagement();
-        }).catch(e => alert('Błąd: ' + e.message));
+    // ==================================================
+    // WYNIKI EGZAMINÓW (NOWE)
+    // ==================================================
+    function openResults() {
+        document.getElementById('resultsModal').style.display = 'flex';
+        loadResults();
     }
 
-    function deleteUser(login) {
-        if (confirm('Czy na pewno chcesz usunąć konto ' + login + '? To operacja nieodwracalna.')) {
-            db.ref('users/' + login).remove().then(() => {
-                alert('Usunięto konto.');
-                loadUsersForManagement();
+    function loadResults() {
+        const container = document.getElementById('resultsContainer');
+        container.innerHTML = '<div style="text-align:center; padding:20px;">Ładowanie wyników...</div>';
+        
+        db.ref('examLogs').orderByChild('date').limitToLast(50).once('value')
+        .then(snap => {
+            if(!snap.exists()) { container.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">Brak wyników.</div>'; return; }
+            const logs = []; snap.forEach(c => logs.push(c.val())); logs.reverse();
+
+            // Stats
+            document.getElementById('statTotal').innerText = logs.length;
+            document.getElementById('statPass').innerText = logs.filter(l => l.passed).length;
+            document.getElementById('statFail').innerText = logs.filter(l => !l.passed).length;
+
+            let html = '';
+            logs.forEach(log => {
+                const d = new Date(log.date);
+                const dateStr = d.toLocaleString('pl-PL');
+                const cls = log.passed ? 'pass' : 'fail';
+                const badge = log.passed ? '<span class="log-badge badge-pass">ZALICZONY</span>' : '<span class="log-badge badge-fail">NIEZALICZONY</span>';
+                const score = `${log.score} / ${log.maxScore}`;
+
+                // Szczegóły (prosta tabela)
+                let details = '';
+                if(log.details && log.details.length > 0) {
+                    details = '<div class="log-details"><table class="detail-table">';
+                    log.details.forEach(d => {
+                        const icon = d.ok ? '<span class="correct">✔</span>' : '<span class="wrong">✖</span>';
+                        details += `<tr><td>${icon}</td><td>${d.text}</td><td>Ty: ${d.user || '-'}</td></tr>`;
+                    });
+                    details += '</table></div>';
+                }
+
+                html += `<div class="log-card ${cls}">
+                    <div class="log-header" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display==='block' ? 'none' : 'block')">
+                        <div class="log-info"><h3>Klucz: ${log.key}</h3><p>${dateStr}</p></div>
+                        <div style="display:flex; align-items:center; gap:10px;"><strong>${score}</strong>${badge}</div>
+                    </div>
+                    ${details}
+                </div>`;
             });
-        }
+            container.innerHTML = html;
+        })
+        .catch(err => {
+            console.error(err);
+            container.innerHTML = `<div style="color:#e74c3c; padding:20px; text-align:center;">
+                Błąd dostępu do bazy danych (permission_denied).<br>
+                <small>Sprawdź reguły Firebase dla węzła 'examLogs' (wymagane .read true).</small>
+            </div>`;
+        });
     }
 </script>
 </body>
